@@ -10,7 +10,7 @@ class Game {
 
     constructor() {
         this.objects = new Array<GameObject>();
-        window.player = new Player(50, 50, 64, 64);
+        window.player = new Player(50, 50, 48 * 1.5, 60 * 1.5);
         this.canvas = new Canvas("canvas", this);
         this.run();
     }

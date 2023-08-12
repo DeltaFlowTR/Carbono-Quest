@@ -14,6 +14,8 @@ class Canvas {
     }
 
     public async render() {
+        // this.context.imageSmoothingEnabled = true;
+        // this.context.imageSmoothingQuality = "high";
         this.clear();
 
         this.game.getGameObjects().forEach(object => {
@@ -27,6 +29,13 @@ class Canvas {
 
     public clear(): void {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    public static createSprite(path:string) {
+        const image = document.createElement("img");
+        image.src = window.location.href + path;
+
+        return image
     }
 }
 
