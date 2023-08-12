@@ -7,10 +7,6 @@ class Player extends GameObject {
     private readonly normalPlayerSpeed = 1.5;
     private readonly sprintPlayerSpeed = 2.4;
 
-    private x: number;
-    private y: number;
-    private width: number;
-    private height: number;
     private playerSpeed: number;
 
     private animator: Animator;
@@ -20,13 +16,8 @@ class Player extends GameObject {
     private goingLeft: boolean;
     private goingRight: boolean;
 
-    constructor(x: number, y: number, width: number, height: number) {
-        super();
-
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    constructor() {
+        super(100, 100, 48, 60, 1.5);
         
         this.animator = new Animator(Canvas.createSprite("img/Character.png"), "WalkDown");
 
@@ -170,7 +161,7 @@ class Player extends GameObject {
     public render(context: CanvasRenderingContext2D): void {
         context.save();
 
-        this.animator.drawAnimationFrame(context, this.x, this.y, this.width, this.height);
+        this.animator.drawAnimationFrame(context, this.x, this.y, this.width * this.scale, this.height * this.scale);
 
         context.restore();
     }
