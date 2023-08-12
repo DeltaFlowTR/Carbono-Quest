@@ -1,5 +1,5 @@
 interface IRenderable {
-    render(context: CanvasRenderingContext2D, deltaTime: number): void;
+    render(context: CanvasRenderingContext2D): void;
 }
 
 export default IRenderable;
