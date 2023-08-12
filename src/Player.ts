@@ -2,6 +2,9 @@ import GameObject from "./Engine/GameObject.js";
 type Directions = "UP" | "DOWN" | "LEFT" | "RIGHT" | "NONE";
 
 class Player extends GameObject {
+    private readonly normalPlayerSpeed = 1.5;
+    private readonly sprintPlayerSpeed = 2.4;
+
     private x: number;
     private y: number;
     private width: number;
@@ -21,10 +24,13 @@ class Player extends GameObject {
         this.width = width;
         this.height = height;
 
-        this.playerSpeed = 2.5;
+        this.playerSpeed = this.normalPlayerSpeed;
 
         window.addEventListener("keydown", event => {
-            switch(event.key) {
+            event.preventDefault();
+            const key = event.key.toLocaleLowerCase();
+
+            switch(key) {
                 case "w":
                     this.goingUp = true;
                     break;
@@ -37,13 +43,20 @@ class Player extends GameObject {
                 case "d":
                     this.goingRight = true;
                     break;
+                case "shift":
+                    this.playerSpeed = this.sprintPlayerSpeed;
+                    break;
             }
 
             window.addEventListener("keyup", event => {
-                if(event.key == "w") this.goingUp = false;
-                if(event.key == "s") this.goingDown = false;
-                if(event.key == "a") this.goingLeft = false;
-                if(event.key == "d") this.goingRight = false;
+                event.preventDefault();
+                const key = event.key.toLocaleLowerCase();
+
+                if(key == "w") this.goingUp = false;
+                if(key == "s") this.goingDown = false;
+                if(key == "a") this.goingLeft = false;
+                if(key == "d") this.goingRight = false;
+                if(key == "shift") this.playerSpeed = this.normalPlayerSpeed;
             });
         });
     }
