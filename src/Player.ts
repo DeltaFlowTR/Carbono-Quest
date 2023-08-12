@@ -4,8 +4,8 @@ import GameAnimation from "./renderer/animation/GameAnimation.js";
 import Canvas from "./renderer/Canvas.js";
 
 class Player extends GameObject {
-    private readonly normalPlayerSpeed = 1.5;
-    private readonly sprintPlayerSpeed = 2.4;
+    private readonly normalPlayerSpeed = 2.5;
+    private readonly sprintPlayerSpeed = 4;
 
     private playerSpeed: number;
 
