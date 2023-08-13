@@ -68,6 +68,9 @@ class Animator {
 
 		if (this.animationRunning) animation.drawFrame(context, this.sprite, x, y, width, height);
 		else {
+			// context.strokeStyle = "green";
+			// context.strokeRect(x - width / 2, y - height / 2, width, height);
+
 			context.drawImage(
 				this.sprite,
 				staticFrame.firstPosition.x,

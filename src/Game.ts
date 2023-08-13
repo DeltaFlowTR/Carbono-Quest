@@ -1,6 +1,5 @@
 import GameItem from './Engine/GameItem.js';
 import GameObject from './Engine/GameObject.js';
-import ITickable from './Engine/ITickable.js';
 import Player from './Player.js';
 import Canvas from './renderer/Canvas.js';
 
@@ -13,11 +12,17 @@ class Game {
 	constructor() {
 		this.objects = new Array<GameObject>();
 		window.player = new Player();
+		window.developmentInformationsEnabled = false;
+		window.ticksPerSecond = 0;
 		this.canvas = new Canvas('canvas', this);
 
 		this.objects.push(new GameItem(500, 500, 50, 50, 1));
 
 		this.run();
+
+		window.addEventListener('keypress', (event) => {
+			if (event.key == 'p') window.developmentInformationsEnabled = !window.developmentInformationsEnabled;
+		});
 	}
 
 	/**
@@ -40,7 +45,7 @@ class Game {
 			tps++;
 
 			if (Date.now() - lastTPSUpdateMillis > 1000) {
-				console.log(`TPS: ${tps}`);
+				window.ticksPerSecond = tps;
 				lastTPSUpdateMillis = Date.now();
 				tps = 0;
 			}

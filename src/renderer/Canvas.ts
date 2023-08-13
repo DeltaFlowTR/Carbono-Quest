@@ -6,6 +6,9 @@ class Canvas {
 	private canvas: HTMLCanvasElement;
 	private context: CanvasRenderingContext2D;
 	private game: Game;
+	private framesPerSecond: number = 0;
+	private lastFPSUpdate: number = Date.now();
+	private displayFPS: number = 0;
 
 	constructor(canvasId: string, game: Game) {
 		this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
@@ -51,12 +54,45 @@ class Canvas {
 				this.renderObject(object);
 			});
 
+		if (window.developmentInformationsEnabled) {
+			this.game.getGameObjects().forEach((object) => {
+				this.context.save();
+				object.drawHitbox(this.context);
+				object.drawObjectIdentifier(this.context);
+				this.context.restore();
+			});
+
+			window.player.drawHitbox(this.context);
+			window.player.drawObjectIdentifier(this.context);
+
+			this.context.save();
+
+			this.context.fillStyle = 'black';
+			this.context.font = '15px Arial';
+
+			this.context.fillText(`X: ${window.player.getX()}`, 10, 20);
+			this.context.fillText(`Y: ${window.player.getY()}`, 10, 40);
+			this.context.fillText(`FPS: ${this.displayFPS}`, 10, 60);
+			this.context.fillText(`TPS: ${window.ticksPerSecond}`, 10, 80);
+
+			this.context.restore();
+		}
+
+		this.framesPerSecond++;
+
+		if (Date.now() - this.lastFPSUpdate >= 1000) {
+			this.displayFPS = this.framesPerSecond;
+			this.framesPerSecond = 0;
+			this.lastFPSUpdate = Date.now();
+		}
+
 		requestAnimationFrame(() => this.render());
 	}
 
 	private renderObject(object: GameObject) {
 		this.context.save();
 		object.render(this.context);
+
 		this.context.restore();
 	}
 

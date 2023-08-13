@@ -13,4 +13,5 @@ body {
 #canvas {
 	height: 100%;
 	background-color: white;
+	/* image-rendering: pixelated; */
 }

@@ -6,7 +6,7 @@ class GameItem extends GameObject {
 	private frameCount: number = 0;
 
 	constructor(x: number, y: number, width: number, height: number, scale: number) {
-		super(x, y, width, height, scale);
+		super(x, y, width, height, scale, "GENERIC_ITEM");
 		this.renderShadow = true;
 	}
 

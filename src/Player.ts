@@ -22,74 +22,75 @@ class Player extends GameObject implements ITickable {
 	private goingRight: boolean;
 
 	constructor() {
-		super(100, 100, 48, 60, 1.5);
+		super(100, 100, 34, 52, 1.5, "PLAYER");
 		this.playerSpeed = this.normalPlayerSpeed;
 		this.animator = new Animator(Canvas.createSprite('img/Character.png'), 'WalkDown');
 
 		this.renderShadow = true;
+		this.shadowScale = 0.7;
 
 		const animationWalkUp = new GameAnimation(250, [
 			{
-				firstPosition: { x: 51, y: 0 },
-				secondPosition: { x: 97, y: 59 },
+				firstPosition: { x: 36, y: 0 },
+				secondPosition: { x: 69, y: 52 },
 			},
 			{
-				firstPosition: { x: 101, y: 0 },
-				secondPosition: { x: 149, y: 59 },
+				firstPosition: { x: 70, y: 0 },
+				secondPosition: { x: 104, y: 52 },
 			},
 		]);
 
 		const animationWalkDown = new GameAnimation(250, [
 			{
-				firstPosition: { x: 51, y: 63 },
-				secondPosition: { x: 97, y: 121 },
+				firstPosition: { x: 35, y: 53 },
+				secondPosition: { x: 69, y: 105 },
 			},
 			{
-				firstPosition: { x: 101, y: 63 },
-				secondPosition: { x: 147, y: 121 },
+				firstPosition: { x: 70, y: 53 },
+				secondPosition: { x: 104, y: 105 },
 			},
 		]);
 
 		const animationWalkLeft = new GameAnimation(250, [
 			{
-				firstPosition: { x: 51, y: 187 },
-				secondPosition: { x: 97, y: 245 },
+				firstPosition: { x: 35, y: 159 },
+				secondPosition: { x: 69, y: 211 },
 			},
 			{
-				firstPosition: { x: 101, y: 187 },
-				secondPosition: { x: 147, y: 245 },
+				firstPosition: { x: 70, y: 159 },
+				secondPosition: { x: 104, y: 211 },
 			},
 		]);
 
 		const animationWalkRight = new GameAnimation(250, [
 			{
-				firstPosition: { x: 51, y: 125 },
-				secondPosition: { x: 97, y: 183 },
+				firstPosition: { x: 35, y: 106 },
+				secondPosition: { x: 69, y: 158 },
 			},
 			{
-				firstPosition: { x: 101, y: 125 },
-				secondPosition: { x: 147, y: 183 },
+				firstPosition: { x: 70, y: 106 },
+				secondPosition: { x: 104, y: 158 },
 			},
 		]);
 
-		this.animator.addAnimation('WalkDown', animationWalkDown, {
-			firstPosition: { x: 0, y: 63 },
-			secondPosition: { x: 47, y: 121 },
-		});
-
 		this.animator.addAnimation('WalkUp', animationWalkUp, {
 			firstPosition: { x: 0, y: 0 },
-			secondPosition: { x: 47, y: 59 },
+			secondPosition: { x: 34, y: 52 },
+		});
+
+		this.animator.addAnimation('WalkDown', animationWalkDown, {
+			firstPosition: { x: 0, y: 53 },
+			secondPosition: { x: 34, y: 105 },
 		});
 
 		this.animator.addAnimation('WalkLeft', animationWalkLeft, {
-			firstPosition: { x: 0, y: 187 },
-			secondPosition: { x: 47, y: 245 },
+			firstPosition: { x: 0, y: 160 },
+			secondPosition: { x: 34, y: 211 },
 		});
 
 		this.animator.addAnimation('WalkRight', animationWalkRight, {
-			firstPosition: { x: 0, y: 125 },
-			secondPosition: { x: 47, y: 183 },
+			firstPosition: { x: 0, y: 106 },
+			secondPosition: { x: 34, y: 158 },
 		});
 
 		window.addEventListener('keydown', (event) => {
@@ -157,6 +158,14 @@ class Player extends GameObject implements ITickable {
 
 	public render(context: CanvasRenderingContext2D): void {
 		this.animator.drawAnimationFrame(context, this.x, this.y, this.width * this.scale, this.height * this.scale);
+	}
+
+	public getX(): number {
+		return this.x;
+	}
+
+	public getY(): number {
+		return this.y;
 	}
 }
 

@@ -64,7 +64,7 @@ class GameAnimation {
 			frame.secondPosition.x - frame.firstPosition.x,
 			frame.secondPosition.y - frame.firstPosition.y,
 			x - width / 2,
-			y - width / 2,
+			y - height / 2,
 			width,
 			height
 		);
