@@ -1,4 +1,5 @@
 import GameObject from './Engine/GameObject.js';
+import ITickable from './Engine/ITickable.js';
 import Animator from './renderer/animation/Animator.js';
 import GameAnimation from './renderer/animation/GameAnimation.js';
 import Canvas from './renderer/Canvas.js';
@@ -7,7 +8,7 @@ import Canvas from './renderer/Canvas.js';
  * Represents the player inside the game. This class is responsible for handling
  * all the movimentation and interactions between the player and the game
  */
-class Player extends GameObject {
+class Player extends GameObject implements ITickable {
 	private readonly normalPlayerSpeed = 2.5;
 	private readonly sprintPlayerSpeed = 4;
 
@@ -24,6 +25,8 @@ class Player extends GameObject {
 		super(100, 100, 48, 60, 1.5);
 		this.playerSpeed = this.normalPlayerSpeed;
 		this.animator = new Animator(Canvas.createSprite('img/Character.png'), 'WalkDown');
+
+		this.renderShadow = true;
 
 		const animationWalkUp = new GameAnimation(250, [
 			{
@@ -153,11 +156,7 @@ class Player extends GameObject {
 	}
 
 	public render(context: CanvasRenderingContext2D): void {
-		context.save();
-
 		this.animator.drawAnimationFrame(context, this.x, this.y, this.width * this.scale, this.height * this.scale);
-
-		context.restore();
 	}
 }
 

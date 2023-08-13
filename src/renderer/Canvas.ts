@@ -1,3 +1,5 @@
+import GameItem from '../Engine/GameItem.js';
+import GameObject from '../Engine/GameObject.js';
 import Game from '../Game.js';
 
 class Canvas {
@@ -20,13 +22,42 @@ class Canvas {
 	public async render() {
 		this.clear();
 
-		this.game.getGameObjects().forEach((object) => {
-			object.render(this.context);
-		});
+		// Render all the objects shadows so they appear bellow all the objects
+		this.game
+			.getGameObjects()
+			.filter((obj) => obj.hasShadow())
+			.forEach((object) => {
+				object.drawShadow(this.context);
+			});
 
-		window.player.render(this.context);
+		window.player.drawShadow(this.context);
+
+		// Render all game objects, excluding the items
+		this.game
+			.getGameObjects()
+			.filter((obj) => !(obj instanceof GameItem))
+			.forEach((object) => {
+				this.renderObject(object);
+			});
+
+		// Render the player
+		this.renderObject(window.player);
+
+		// Render all items, they are rendered after the other objects so the appear above them
+		this.game
+			.getGameObjects()
+			.filter((obj) => obj instanceof GameItem)
+			.forEach((object) => {
+				this.renderObject(object);
+			});
 
 		requestAnimationFrame(() => this.render());
+	}
+
+	private renderObject(object: GameObject) {
+		this.context.save();
+		object.render(this.context);
+		this.context.restore();
 	}
 
 	public clear(): void {

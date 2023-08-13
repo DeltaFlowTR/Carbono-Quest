@@ -1,4 +1,6 @@
+import GameItem from './Engine/GameItem.js';
 import GameObject from './Engine/GameObject.js';
+import ITickable from './Engine/ITickable.js';
 import Player from './Player.js';
 import Canvas from './renderer/Canvas.js';
 
@@ -12,6 +14,9 @@ class Game {
 		this.objects = new Array<GameObject>();
 		window.player = new Player();
 		this.canvas = new Canvas('canvas', this);
+
+		this.objects.push(new GameItem(500, 500, 50, 50, 1));
+
 		this.run();
 	}
 
@@ -27,7 +32,7 @@ class Game {
 		while (true) {
 			// TIcks all objects inside the game
 			this.objects.forEach((object) => {
-				object.tick();
+				if (object.isTickable()) object.tick();
 			});
 
 			window.player.tick();
