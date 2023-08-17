@@ -1,4 +1,3 @@
-import GameObject from '../Engine/GameObject';
 import Game from '../Game';
 
 class Canvas {
@@ -88,13 +87,6 @@ class Canvas {
 		requestAnimationFrame(() => this.render());
 	}
 
-	private renderObject(object: GameObject) {
-		this.context.save();
-		object.render(this.context);
-
-		this.context.restore();
-	}
-
 	public static createSprite(path: string) {
 		const image = document.createElement('img');
 		image.src = window.location.href + path;
@@ -116,6 +108,10 @@ class Canvas {
 
 	public getHeight() {
 		return this.canvas.height;
+	}
+
+	public getSize() {
+		return { width: this.getWidth(), height: this.getHeight() };
 	}
 }
 

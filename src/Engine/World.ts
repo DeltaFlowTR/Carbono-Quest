@@ -1,84 +1,100 @@
-import { Vector2f } from "../Game";
-import Renderer from "../renderer/Renderer";
-import GameItem from "./GameItem";
-import GameObject from "./GameObject";
+import { Vector2f } from '../Game';
+import Canvas from '../renderer/Canvas';
+import GameItem from './GameItem';
+import GameObject from './GameObject';
 
 class World {
-    private readonly tickInterval = (1 / 60) * 1000;
+	private readonly tickInterval = (1 / 60) * 1000;
 
-    private gameObjects: Array<GameObject>;
+	private gameObjects: Array<GameObject>;
 
-    constructor() {
-        this.gameObjects = new Array<GameObject>();
-        this.startTickLoop();
-        this.render();
-    }
+	constructor() {
+		this.gameObjects = new Array<GameObject>();
+		this.startTickLoop();
+		this.render();
 
-    public async render() {
-        window.renderer.clear();
+		this.gameObjects.push(new GameItem(200, 200, 50, 50, 1, Canvas.createSprite('img/Light-bulb.png'), 'LIGHT_BULB'));
+	}
 
-        const items = this.gameObjects.filter(obj => obj instanceof GameItem);
-        const objects = this.gameObjects.filter(obj => !(obj instanceof GameItem));
+	public async render() {
+		window.renderer.clear();
 
-        const player = window.player;
-        const worldOffset: Vector2f = { x: player.getX(), y: player.getY() }
+		const canvas = window.renderer.getCanvas();
+		const canvasWidth = canvas.getWidth();
+		const canvasHeight = canvas.getHeight();
 
-        objects.forEach(object => {
-            window.renderer.renderGameObject(object, worldOffset);
-        });
+		const items = this.gameObjects.filter((obj) => obj instanceof GameItem);
+		const objects = this.gameObjects.filter((obj) => !(obj instanceof GameItem));
 
-        this.renderItems(items, worldOffset);
+		const player = window.player;
+		const worldOffset: Vector2f = { x: player.getX(), y: player.getY() };
 
-        this.renderPlayer();
+		this.gameObjects
+			.filter((obj) => obj.hasShadow())
+			.forEach((object) => {
+				window.renderer.drawShadow(object.getX(), object.getY(), object.getHeight() * object.getScale(), object.getShadowScale(), worldOffset);
+			});
 
-        if(window.developmentInformationsEnabled) this.renderDevelopmentInfo();
+		window.renderer.drawShadow(canvasWidth / 2, canvasHeight / 2, player.getHeight() * player.getScale(), player.getShadowScale(), { x: 0, y: 0 }, true);
 
-        requestAnimationFrame(() => this.render());
-    }
+		objects.forEach((object) => {
+			window.renderer.renderGameObject(object, worldOffset);
+		});
 
-    private renderItems(items: Array<GameObject>, worldOffset: Vector2f) {
-        items.forEach(object => {
-            window.renderer.renderGameObject(object, worldOffset);
-        });
-    }
+		this.renderPlayer();
+		this.renderItems(items, worldOffset);
 
-    private renderDevelopmentInfo() {
+		if (window.developmentInformationsEnabled) this.renderDevelopmentInfo(worldOffset);
 
-        this.gameObjects.forEach(object => {
-            const width = object.getWidth() * object.getScale();
-            const height = object.getHeight() * object.getScale();
+		requestAnimationFrame(() => this.render());
+	}
 
-            window.renderer.drawHitbox(object.getX(), object.getY(), width, height);
-        });
+	private renderItems(items: Array<GameObject>, worldOffset: Vector2f) {
+		items.forEach((object) => {
+			window.renderer.renderGameObject(object, worldOffset);
+		});
+	}
 
-        const canvas = window.renderer.getCanvas();
-        const canvasWidth = canvas.getWidth();
-        const canvasHeight = canvas.getHeight();
+	private renderDevelopmentInfo(worldOffset: Vector2f) {
+		this.gameObjects.forEach((object) => {
+			const width = object.getWidth() * object.getScale();
+			const height = object.getHeight() * object.getScale();
 
-        const player = window.player;
-        const width = player.getWidth() * player.getScale();
-        const height = player.getHeight() * player.getScale();
+			const convertedCoodinates = window.renderer.convertCoodinates(object.getX(), object.getY(), worldOffset);
 
-        window.renderer.drawHitbox(canvasWidth / 2, canvasHeight / 2, width, height);
+			window.renderer.drawHitbox(object.getX(), object.getY(), width, height, worldOffset);
+			window.renderer.renderText(object.getObjectIdentifier(), convertedCoodinates.x - width / 2, convertedCoodinates.y - height / 2 - 10, 'Arial 20px');
+		});
 
-        window.renderer.renderText(`X: ${window.player.getX()}`, 20, 30, "25px Arial");
-        window.renderer.renderText(`Y: ${window.player.getY()}`, 20, 60, "25px Arial");
-    }
+		const canvas = window.renderer.getCanvas();
+		const canvasWidth = canvas.getWidth();
+		const canvasHeight = canvas.getHeight();
 
-    private renderPlayer() {
-        const player = window.player;
-        const sprite = player.getSprite();
-        const animator = player.getAnimator();
+		const player = window.player;
+		const width = player.getWidth() * player.getScale();
+		const height = player.getHeight() * player.getScale();
 
-        const width = player.getWidth() * player.getScale();
-        const height = player.getHeight() * player.getScale();
+		window.renderer.drawHitbox(canvasWidth / 2, canvasHeight / 2, width, height, { x: 0, y: 0 }, true);
+		window.renderer.renderText(player.getObjectIdentifier(), canvasWidth / 2 - player.getWidth() / 2, canvasHeight / 2 - player.getHeight() / 2 - 20, 'Arial 20px');
 
-        const canvas = window.renderer.getCanvas();
+		window.renderer.renderText(`X: ${window.player.getX()}`, 20, 30, '20px Arial');
+		window.renderer.renderText(`Y: ${window.player.getY()}`, 20, 50, '20px Arial');
+	}
 
-        window.renderer.renderImage(sprite, animator.getCurrentFrame(), canvas.getWidth() / 2, canvas.getHeight() / 2, width, height);
-    }
+	private renderPlayer() {
+		const player = window.player;
+		const sprite = player.getSprite();
+		const animator = player.getAnimator();
 
-    /**
+		const width = player.getWidth() * player.getScale();
+		const height = player.getHeight() * player.getScale();
+
+		const canvas = window.renderer.getCanvas();
+
+		window.renderer.renderImage(sprite, animator.getCurrentFrame(), canvas.getWidth() / 2, canvas.getHeight() / 2, width, height);
+	}
+
+	/**
 	 * Method responsible for updating all the game objects.
 	 * This method should be called only one time, as it will start a loop that will continuously update the objects.
 	 */
@@ -107,9 +123,9 @@ class World {
 		}
 	}
 
-    public getGameObjects() {
-        return this.gameObjects;
-    }
+	public getGameObjects() {
+		return this.gameObjects;
+	}
 }
 
 export default World;

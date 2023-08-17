@@ -20,17 +20,17 @@ class Player extends GameObject implements ITickable {
 	private goingRight: boolean;
 
 	constructor() {
-        const animator = new Animator('WalkDown');
-        super(100, 100, 34, 52, 1.5, Canvas.createSprite('img/Character.png'), "PLAYER", true, animator);
-		
-        this.playerSpeed = this.normalPlayerSpeed;
-        
+		const animator = new Animator('WalkDown');
+		super(100, 100, 34, 52, 1.5, Canvas.createSprite('img/Character.png'), 'PLAYER', true, animator);
+
+		this.playerSpeed = this.normalPlayerSpeed;
+
 		this.renderShadow = true;
 		this.shadowScale = 0.7;
 
 		const animationWalkUp = new GameAnimation(250, [
 			{
-				firstPosition: { x: 36, y: 0 },
+				firstPosition: { x: 35, y: 0 },
 				secondPosition: { x: 69, y: 52 },
 			},
 			{
@@ -83,7 +83,7 @@ class Player extends GameObject implements ITickable {
 		});
 
 		this.animator.addAnimation('WalkLeft', animationWalkLeft, {
-			firstPosition: { x: 0, y: 160 },
+			firstPosition: { x: 0, y: 159 },
 			secondPosition: { x: 34, y: 211 },
 		});
 
@@ -153,10 +153,6 @@ class Player extends GameObject implements ITickable {
 		else if (this.x < previousX) this.animator.startAnimation('WalkLeft');
 
 		if (this.x === previousX && this.y === previousY) this.animator.stopAnimation();
-	}
-
-	public render(context: CanvasRenderingContext2D): void {
-		//this.animator.drawAnimationFrame(context, this.x, this.y, this.width * this.scale, this.height * this.scale);
 	}
 
 	public getX(): number {
