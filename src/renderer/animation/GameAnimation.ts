@@ -1,11 +1,4 @@
-/**
- * Represents an animation frame.
- * The positions declared at this interface represents the position of the top-left and bottom-right pixel of the frame, respectively.
- */
-interface Frame {
-	firstPosition: { x: number; y: number };
-	secondPosition: { x: number; y: number };
-}
+import { Frame } from "../Renderer";
 
 /**
  * Represents an animation that can be played by the Animator class.
@@ -45,6 +38,10 @@ class GameAnimation {
 		this.currentFrameIndex = 0;
 	}
 
+	public getCurrentFrame() {
+		return this.frames[this.currentFrameIndex];
+	}
+
 	/**
 	 * Renders the current frame
 	 * @param context The rendering context
@@ -55,7 +52,7 @@ class GameAnimation {
 	 * @param height The height of the rendered frame
 	 */
 	public drawFrame(context: CanvasRenderingContext2D, sprite: HTMLImageElement, x: number, y: number, width: number, height: number) {
-		const frame = this.frames[this.currentFrameIndex];
+		const frame = this.getCurrentFrame();
 
 		context.drawImage(
 			sprite,

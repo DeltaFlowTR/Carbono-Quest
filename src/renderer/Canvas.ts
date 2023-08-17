@@ -1,6 +1,5 @@
-import GameItem from '../Engine/GameItem.js';
-import GameObject from '../Engine/GameObject.js';
-import Game from '../Game.js';
+import GameObject from '../Engine/GameObject';
+import Game from '../Game';
 
 class Canvas {
 	private canvas: HTMLCanvasElement;
@@ -23,60 +22,60 @@ class Canvas {
 	 * This needs to be called just one time, after that a loop will start and will continue to render the scene automatically.
 	 */
 	public async render() {
-		this.clear();
+		// this.clear();
 
-		// Render all the objects shadows so they appear bellow all the objects
-		this.game
-			.getGameObjects()
-			.filter((obj) => obj.hasShadow())
-			.forEach((object) => {
-				object.drawShadow(this.context);
-			});
+		// // Render all the objects shadows so they appear bellow all the objects
+		// this.game
+		// 	.getGameObjects()
+		// 	.filter((obj) => obj.hasShadow())
+		// 	.forEach((object) => {
+		// 		object.drawShadow(this.context);
+		// 	});
 
-		window.player.drawShadow(this.context);
+		// window.player.drawShadow(this.context);
 
-		// Render all game objects, excluding the items
-		this.game
-			.getGameObjects()
-			.filter((obj) => !(obj instanceof GameItem))
-			.forEach((object) => {
-				this.renderObject(object);
-			});
+		// // Render all game objects, excluding the items
+		// this.game
+		// 	.getGameObjects()
+		// 	.filter((obj) => !(obj instanceof GameItem))
+		// 	.forEach((object) => {
+		// 		this.renderObject(object);
+		// 	});
 
-		// Render the player
-		this.renderObject(window.player);
+		// // Render the player
+		// this.renderObject(window.player);
 
-		// Render all items, they are rendered after the other objects so the appear above them
-		this.game
-			.getGameObjects()
-			.filter((obj) => obj instanceof GameItem)
-			.forEach((object) => {
-				this.renderObject(object);
-			});
+		// // Render all items, they are rendered after the other objects so the appear above them
+		// this.game
+		// 	.getGameObjects()
+		// 	.filter((obj) => obj instanceof GameItem)
+		// 	.forEach((object) => {
+		// 		this.renderObject(object);
+		// 	});
 
-		if (window.developmentInformationsEnabled) {
-			this.game.getGameObjects().forEach((object) => {
-				this.context.save();
-				object.drawHitbox(this.context);
-				object.drawObjectIdentifier(this.context);
-				this.context.restore();
-			});
+		// if (window.developmentInformationsEnabled) {
+		// 	this.game.getGameObjects().forEach((object) => {
+		// 		this.context.save();
+		// 		object.drawHitbox(this.context);
+		// 		object.drawObjectIdentifier(this.context);
+		// 		this.context.restore();
+		// 	});
 
-			window.player.drawHitbox(this.context);
-			window.player.drawObjectIdentifier(this.context);
+		// 	window.player.drawHitbox(this.context);
+		// 	window.player.drawObjectIdentifier(this.context);
 
-			this.context.save();
+		// 	this.context.save();
 
-			this.context.fillStyle = 'black';
-			this.context.font = '15px Arial';
+		// 	this.context.fillStyle = 'black';
+		// 	this.context.font = '15px Arial';
 
-			this.context.fillText(`X: ${window.player.getX()}`, 10, 20);
-			this.context.fillText(`Y: ${window.player.getY()}`, 10, 40);
-			this.context.fillText(`FPS: ${this.displayFPS}`, 10, 60);
-			this.context.fillText(`TPS: ${window.ticksPerSecond}`, 10, 80);
+		// 	this.context.fillText(`X: ${window.player.getX()}`, 10, 20);
+		// 	this.context.fillText(`Y: ${window.player.getY()}`, 10, 40);
+		// 	this.context.fillText(`FPS: ${this.displayFPS}`, 10, 60);
+		// 	this.context.fillText(`TPS: ${window.ticksPerSecond}`, 10, 80);
 
-			this.context.restore();
-		}
+		// 	this.context.restore();
+		// }
 
 		this.framesPerSecond++;
 
@@ -96,15 +95,27 @@ class Canvas {
 		this.context.restore();
 	}
 
-	public clear(): void {
-		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-	}
-
 	public static createSprite(path: string) {
 		const image = document.createElement('img');
 		image.src = window.location.href + path;
 
 		return image;
+	}
+
+	public static getSpriteSize(sprite: HTMLImageElement) {
+		return { width: sprite.width, height: sprite.height };
+	}
+
+	public getContext() {
+		return this.context;
+	}
+
+	public getWidth() {
+		return this.canvas.width;
+	}
+
+	public getHeight() {
+		return this.canvas.height;
 	}
 }
 

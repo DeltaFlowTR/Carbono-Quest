@@ -1,8 +1,8 @@
-import GameObject from './Engine/GameObject.js';
-import ITickable from './Engine/ITickable.js';
-import Animator from './renderer/animation/Animator.js';
-import GameAnimation from './renderer/animation/GameAnimation.js';
-import Canvas from './renderer/Canvas.js';
+import GameObject from './Engine/GameObject';
+import ITickable from './Engine/ITickable';
+import Animator from './renderer/animation/Animator';
+import GameAnimation from './renderer/animation/GameAnimation';
+import Canvas from './renderer/Canvas';
 
 /**
  * Represents the player inside the game. This class is responsible for handling
@@ -14,18 +14,17 @@ class Player extends GameObject implements ITickable {
 
 	private playerSpeed: number;
 
-	private animator: Animator;
-
 	private goingUp: boolean;
 	private goingDown: boolean;
 	private goingLeft: boolean;
 	private goingRight: boolean;
 
 	constructor() {
-		super(100, 100, 34, 52, 1.5, "PLAYER");
-		this.playerSpeed = this.normalPlayerSpeed;
-		this.animator = new Animator(Canvas.createSprite('img/Character.png'), 'WalkDown');
-
+        const animator = new Animator('WalkDown');
+        super(100, 100, 34, 52, 1.5, Canvas.createSprite('img/Character.png'), "PLAYER", true, animator);
+		
+        this.playerSpeed = this.normalPlayerSpeed;
+        
 		this.renderShadow = true;
 		this.shadowScale = 0.7;
 
@@ -157,7 +156,7 @@ class Player extends GameObject implements ITickable {
 	}
 
 	public render(context: CanvasRenderingContext2D): void {
-		this.animator.drawAnimationFrame(context, this.x, this.y, this.width * this.scale, this.height * this.scale);
+		//this.animator.drawAnimationFrame(context, this.x, this.y, this.width * this.scale, this.height * this.scale);
 	}
 
 	public getX(): number {

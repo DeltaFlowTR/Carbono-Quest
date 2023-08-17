@@ -1,12 +1,11 @@
-import Canvas from '../renderer/Canvas.js';
-import GameObject from './GameObject.js';
+import GameObject from './GameObject';
 
 class GameItem extends GameObject {
 	private static readonly floatingAnimationOffset: number = 5;
 	private frameCount: number = 0;
 
 	constructor(x: number, y: number, width: number, height: number, scale: number) {
-		super(x, y, width, height, scale, "GENERIC_ITEM");
+		super(x, y, width, height, scale, null, "GENERIC_ITEM");
 		this.renderShadow = true;
 	}
 
