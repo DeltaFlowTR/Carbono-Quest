@@ -1,12 +1,11 @@
-import Animator from '../renderer/animation/Animator';
-import GameObject from './GameObject';
+import GameObject, { GameObjectProperties } from './GameObject';
 
 class GameItem extends GameObject {
 	private static readonly floatingAnimationOffset: number = 5;
 	private frameCount: number = 0;
 
-	constructor(x: number, y: number, width: number, height: number, scale: number, sprite: HTMLImageElement, identifier?: string, userAnimation?: boolean, animator?: Animator | undefined) {
-		super(x, y, width, height, scale, sprite, identifier || 'GENERIC_ITEM', userAnimation, animator);
+	constructor(properties: GameObjectProperties) {
+		super(properties);
 		this.renderShadow = true;
 	}
 

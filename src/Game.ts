@@ -1,6 +1,6 @@
-import World from './Engine/World.js';
-import Player from './Player.js';
-import Renderer from './renderer/Renderer.js';
+import World from './Engine/World';
+import Player from './Player';
+import Renderer from './renderer/Renderer';
 
 interface Vector2f {
 	x: number;
@@ -12,14 +12,13 @@ class Game {
 
 	constructor() {
 		window.player = new Player();
-		window.renderer = new Renderer(this);
-		window.developmentInformationsEnabled = false;
-		window.ticksPerSecond = 0;
+		window.renderer = new Renderer();
+		window.debugInfoEnabled = false;
 
 		this.world = new World();
 
 		window.addEventListener('keypress', (event) => {
-			if (event.key == 'p') window.developmentInformationsEnabled = !window.developmentInformationsEnabled;
+			if (event.key == 'p') window.debugInfoEnabled = !window.debugInfoEnabled;
 		});
 	}
 

@@ -21,7 +21,17 @@ class Player extends GameObject implements ITickable {
 
 	constructor() {
 		const animator = new Animator('WalkDown');
-		super(100, 100, 34, 52, 1.5, Canvas.createSprite('img/Character.png'), 'PLAYER', true, animator);
+
+		super({
+			x: 100,
+			y: 100,
+			width: 34,
+			height: 52,
+			scale: 1.5,
+			objectSprite: Canvas.createSprite('img/Character.png'),
+			objectIdentifier: 'PLAYER',
+			animator: animator,
+		});
 
 		this.playerSpeed = this.normalPlayerSpeed;
 

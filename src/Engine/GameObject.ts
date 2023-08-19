@@ -2,6 +2,17 @@ import Canvas from '../renderer/Canvas';
 import Animator from '../renderer/animation/Animator';
 import ITickable from './ITickable';
 
+interface GameObjectProperties {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	scale?: number;
+	objectSprite: HTMLImageElement;
+	objectIdentifier: string;
+	animator?: Animator;
+}
+
 /**
  * Represents an object that can be inserted into the game
  */
@@ -22,16 +33,16 @@ abstract class GameObject {
 
 	public readonly objectIdentifier: string;
 
-	constructor(x: number, y: number, width: number, height: number, scale: number, objectSprite: HTMLImageElement, objectIdentifier: string, useAnimation?: boolean, animator?: Animator | undefined) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.scale = scale;
-		this.objectSprite = objectSprite;
-		this.objectIdentifier = objectIdentifier;
-		this.useAnimation = useAnimation;
-		this.animator = animator;
+	constructor(properties: GameObjectProperties) {
+		this.x = properties.x;
+		this.y = properties.y;
+		this.width = properties.width;
+		this.height = properties.height;
+		this.scale = properties.scale || 1;
+		this.objectSprite = properties.objectSprite;
+		this.objectIdentifier = properties.objectIdentifier;
+		this.useAnimation = properties.animator != undefined;
+		this.animator = properties.animator;
 	}
 
 	/**
@@ -88,3 +99,4 @@ abstract class GameObject {
 }
 
 export default GameObject;
+export { GameObjectProperties };

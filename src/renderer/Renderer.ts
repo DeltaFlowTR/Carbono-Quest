@@ -1,5 +1,5 @@
 import GameObject from '../Engine/GameObject';
-import Game, { Vector2f } from '../Game';
+import { Vector2f } from '../Game';
 import Canvas from './Canvas';
 
 /**
@@ -15,8 +15,8 @@ class Renderer {
 	private readonly canvas: Canvas;
 	private readonly canvasContext: CanvasRenderingContext2D;
 
-	constructor(game: Game) {
-		this.canvas = new Canvas('canvas', game);
+	constructor() {
+		this.canvas = new Canvas('canvas');
 		this.canvasContext = this.canvas.getContext();
 	}
 

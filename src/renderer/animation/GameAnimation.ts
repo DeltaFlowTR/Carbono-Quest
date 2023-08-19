@@ -1,4 +1,4 @@
-import { Frame } from "../Renderer";
+import { Frame } from '../Renderer';
 
 /**
  * Represents an animation that can be played by the Animator class.
@@ -40,31 +40,6 @@ class GameAnimation {
 
 	public getCurrentFrame() {
 		return this.frames[this.currentFrameIndex];
-	}
-
-	/**
-	 * Renders the current frame
-	 * @param context The rendering context
-	 * @param sprite The sprite containing the frames defined on the constructor
-	 * @param x The X position to render the frame
-	 * @param y The Y position to render the frame
-	 * @param width The width of the rendered frame
-	 * @param height The height of the rendered frame
-	 */
-	public drawFrame(context: CanvasRenderingContext2D, sprite: HTMLImageElement, x: number, y: number, width: number, height: number) {
-		const frame = this.getCurrentFrame();
-
-		context.drawImage(
-			sprite,
-			frame.firstPosition.x,
-			frame.firstPosition.y,
-			frame.secondPosition.x - frame.firstPosition.x,
-			frame.secondPosition.y - frame.firstPosition.y,
-			x - width / 2,
-			y - height / 2,
-			width,
-			height
-		);
 	}
 }
 

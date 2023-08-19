@@ -6,6 +6,13 @@ import GameObject from './GameObject';
 class World {
 	private readonly tickInterval = (1 / 60) * 1000;
 
+	private ticksPerSecond: number = 0;
+
+	private framesPerSecond: number = 0;
+	private displayFramesPerSecond: number = 0;
+
+	private lastFpsUpdateTime: number = 0;
+
 	private gameObjects: Array<GameObject>;
 
 	constructor() {
@@ -13,9 +20,22 @@ class World {
 		this.startTickLoop();
 		this.render();
 
-		this.gameObjects.push(new GameItem(200, 200, 50, 50, 1, Canvas.createSprite('img/Light-bulb.png'), 'LIGHT_BULB'));
+		const lightBulb = new GameItem({
+			x: 200,
+			y: 200,
+			width: 50,
+			height: 50,
+			objectSprite: Canvas.createSprite('img/Light-bulb.png'),
+			objectIdentifier: 'LIGHT_BULB',
+		});
+
+		this.gameObjects.push(lightBulb);
 	}
 
+	/**
+	 * Method responsible for rendering the scene. This method should not be called directly, as it is already called by the constructor.
+	 * This needs to be called just one time, after that a loop will start and will continue to render the scene automatically.
+	 */
 	public async render() {
 		window.renderer.clear();
 
@@ -32,10 +52,23 @@ class World {
 		this.gameObjects
 			.filter((obj) => obj.hasShadow())
 			.forEach((object) => {
-				window.renderer.drawShadow(object.getX(), object.getY(), object.getHeight() * object.getScale(), object.getShadowScale(), worldOffset);
+				window.renderer.drawShadow(
+					object.getX(),
+					object.getY(),
+					object.getHeight() * object.getScale(),
+					object.getShadowScale(),
+					worldOffset
+				);
 			});
 
-		window.renderer.drawShadow(canvasWidth / 2, canvasHeight / 2, player.getHeight() * player.getScale(), player.getShadowScale(), { x: 0, y: 0 }, true);
+		window.renderer.drawShadow(
+			canvasWidth / 2,
+			canvasHeight / 2,
+			player.getHeight() * player.getScale(),
+			player.getShadowScale(),
+			{ x: 0, y: 0 },
+			true
+		);
 
 		objects.forEach((object) => {
 			window.renderer.renderGameObject(object, worldOffset);
@@ -44,8 +77,15 @@ class World {
 		this.renderPlayer();
 		this.renderItems(items, worldOffset);
 
-		if (window.developmentInformationsEnabled) this.renderDevelopmentInfo(worldOffset);
+		if (window.debugInfoEnabled) this.renderDebugInfo(worldOffset);
 
+		if (Date.now() - this.lastFpsUpdateTime >= 1000) {
+			this.displayFramesPerSecond = this.framesPerSecond;
+			this.lastFpsUpdateTime = Date.now();
+			this.framesPerSecond = 0;
+		}
+
+		this.framesPerSecond++;
 		requestAnimationFrame(() => this.render());
 	}
 
@@ -55,15 +95,22 @@ class World {
 		});
 	}
 
-	private renderDevelopmentInfo(worldOffset: Vector2f) {
+	private renderDebugInfo(worldOffset: Vector2f) {
+		const renderer = window.renderer;
+
 		this.gameObjects.forEach((object) => {
 			const width = object.getWidth() * object.getScale();
 			const height = object.getHeight() * object.getScale();
 
 			const convertedCoodinates = window.renderer.convertCoodinates(object.getX(), object.getY(), worldOffset);
 
-			window.renderer.drawHitbox(object.getX(), object.getY(), width, height, worldOffset);
-			window.renderer.renderText(object.getObjectIdentifier(), convertedCoodinates.x - width / 2, convertedCoodinates.y - height / 2 - 10, 'Arial 20px');
+			renderer.drawHitbox(object.getX(), object.getY(), width, height, worldOffset);
+			renderer.renderText(
+				object.getObjectIdentifier(),
+				convertedCoodinates.x - width / 2,
+				convertedCoodinates.y - height / 2 - 10,
+				'Arial 20px'
+			);
 		});
 
 		const canvas = window.renderer.getCanvas();
@@ -74,11 +121,18 @@ class World {
 		const width = player.getWidth() * player.getScale();
 		const height = player.getHeight() * player.getScale();
 
-		window.renderer.drawHitbox(canvasWidth / 2, canvasHeight / 2, width, height, { x: 0, y: 0 }, true);
-		window.renderer.renderText(player.getObjectIdentifier(), canvasWidth / 2 - player.getWidth() / 2, canvasHeight / 2 - player.getHeight() / 2 - 20, 'Arial 20px');
+		renderer.drawHitbox(canvasWidth / 2, canvasHeight / 2, width, height, { x: 0, y: 0 }, true);
+		renderer.renderText(
+			player.getObjectIdentifier(),
+			canvasWidth / 2 - player.getWidth() / 2,
+			canvasHeight / 2 - player.getHeight() / 2 - 20,
+			'Arial 20'
+		);
 
-		window.renderer.renderText(`X: ${window.player.getX()}`, 20, 30, '20px Arial');
-		window.renderer.renderText(`Y: ${window.player.getY()}`, 20, 50, '20px Arial');
+		renderer.renderText(`X: ${window.player.getX()}`, 20, 30, '20px Arial');
+		renderer.renderText(`Y: ${window.player.getY()}`, 20, 55, '20px Arial');
+		renderer.renderText(`FPS: ${this.displayFramesPerSecond}`, 20, 80, '20px Arial');
+		renderer.renderText(`TPS: ${this.ticksPerSecond}`, 20, 105, '20px Arial');
 	}
 
 	private renderPlayer() {
@@ -111,14 +165,13 @@ class World {
 
 			window.player.tick();
 
-			tps++;
-
 			if (Date.now() - lastTPSUpdateMillis > 1000) {
-				window.ticksPerSecond = tps;
+				this.ticksPerSecond = tps;
 				lastTPSUpdateMillis = Date.now();
 				tps = 0;
 			}
 
+			tps++;
 			await wait(this.tickInterval);
 		}
 	}

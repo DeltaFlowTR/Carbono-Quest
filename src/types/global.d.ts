@@ -4,8 +4,7 @@ import Renderer from "../renderer/Renderer";
 declare global {
     interface Window {
         player: Player;
-        developmentInformationsEnabled: boolean;
-        ticksPerSecond: number;
+        debugInfoEnabled: boolean;
         renderer: Renderer;
     }
 }
