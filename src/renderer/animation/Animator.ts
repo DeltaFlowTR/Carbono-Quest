@@ -9,13 +9,11 @@ class Animator {
 	private staticFrames: { [key: string]: Frame };
 	private currentAnimationName: string;
 	private animationRunning: boolean = false;
-	private sprite: HTMLImageElement;
 
-	constructor(sprite: HTMLImageElement, startAnimationName: string) {
+	constructor(startAnimationName: string) {
 		this.animations = {};
 		this.staticFrames = {};
 		this.currentAnimationName = startAnimationName;
-		this.sprite = sprite;
 	}
 
 	/**
@@ -54,35 +52,9 @@ class Animator {
 		this.animationRunning = false;
 	}
 
-	/**
-	 * Drawns the current animation frame. If the animation isn't running then the static frame of the animation will be rendered instead
-	 * @param context The rendering context
-	 * @param x The X position to render it
-	 * @param y The Y position to render it
-	 * @param width The width of the rendered image
-	 * @param height The height of the rendered image
-	 */
-	public drawAnimationFrame(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number): void {
-		const animation = this.animations[this.currentAnimationName];
-		const staticFrame = this.staticFrames[this.currentAnimationName];
-
-		if (this.animationRunning) animation.drawFrame(context, this.sprite, x, y, width, height);
-		else {
-			// context.strokeStyle = "green";
-			// context.strokeRect(x - width / 2, y - height / 2, width, height);
-
-			context.drawImage(
-				this.sprite,
-				staticFrame.firstPosition.x,
-				staticFrame.firstPosition.y,
-				staticFrame.secondPosition.x - staticFrame.firstPosition.x,
-				staticFrame.secondPosition.y - staticFrame.firstPosition.y,
-				x - width / 2,
-				y - height / 2,
-				width,
-				height
-			);
-		}
+	public getCurrentFrame() {
+		if (this.animationRunning) return this.animations[this.currentAnimationName].getCurrentFrame();
+		else return this.staticFrames[this.currentAnimationName];
 	}
 }
 

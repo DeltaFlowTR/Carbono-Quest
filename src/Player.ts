@@ -1,8 +1,8 @@
-import GameObject from './Engine/GameObject.js';
-import ITickable from './Engine/ITickable.js';
-import Animator from './renderer/animation/Animator.js';
-import GameAnimation from './renderer/animation/GameAnimation.js';
-import Canvas from './renderer/Canvas.js';
+import GameObject from './Engine/GameObject';
+import ITickable from './Engine/ITickable';
+import Animator from './renderer/animation/Animator';
+import GameAnimation from './renderer/animation/GameAnimation';
+import Canvas from './renderer/Canvas';
 
 /**
  * Represents the player inside the game. This class is responsible for handling
@@ -14,24 +14,33 @@ class Player extends GameObject implements ITickable {
 
 	private playerSpeed: number;
 
-	private animator: Animator;
-
 	private goingUp: boolean;
 	private goingDown: boolean;
 	private goingLeft: boolean;
 	private goingRight: boolean;
 
 	constructor() {
-		super(100, 100, 34, 52, 1.5, "PLAYER");
+		const animator = new Animator('WalkDown');
+
+		super({
+			x: 100,
+			y: 100,
+			width: 34,
+			height: 52,
+			scale: 1.5,
+			objectSprite: Canvas.createSprite('img/Character.png'),
+			objectIdentifier: 'PLAYER',
+			animator: animator,
+		});
+
 		this.playerSpeed = this.normalPlayerSpeed;
-		this.animator = new Animator(Canvas.createSprite('img/Character.png'), 'WalkDown');
 
 		this.renderShadow = true;
 		this.shadowScale = 0.7;
 
 		const animationWalkUp = new GameAnimation(250, [
 			{
-				firstPosition: { x: 36, y: 0 },
+				firstPosition: { x: 35, y: 0 },
 				secondPosition: { x: 69, y: 52 },
 			},
 			{
@@ -84,7 +93,7 @@ class Player extends GameObject implements ITickable {
 		});
 
 		this.animator.addAnimation('WalkLeft', animationWalkLeft, {
-			firstPosition: { x: 0, y: 160 },
+			firstPosition: { x: 0, y: 159 },
 			secondPosition: { x: 34, y: 211 },
 		});
 
@@ -154,10 +163,6 @@ class Player extends GameObject implements ITickable {
 		else if (this.x < previousX) this.animator.startAnimation('WalkLeft');
 
 		if (this.x === previousX && this.y === previousY) this.animator.stopAnimation();
-	}
-
-	public render(context: CanvasRenderingContext2D): void {
-		this.animator.drawAnimationFrame(context, this.x, this.y, this.width * this.scale, this.height * this.scale);
 	}
 
 	public getX(): number {
