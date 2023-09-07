@@ -29,11 +29,19 @@ class Renderer {
 		};
 	}
 
+	/**
+	 * Clear the canvas
+	 */
 	public clear(): void {
 		this.canvasContext.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 	}
 
-	public renderGameObject(object: GameObject, worldOffset: Vector2f) {
+	/**
+	 * Draws one game object into the screen
+	 * @param object The object to render
+	 * @param worldOffset The world offset used to create the illusion of camera
+	 */
+	public drawGameObject(object: GameObject, worldOffset: Vector2f) {
 		this.canvasContext.save();
 
 		const width = object.getWidth() * object.getScale();
@@ -50,16 +58,25 @@ class Renderer {
 				secondPosition: { x: spriteSize.width, y: spriteSize.height },
 			};
 
-			this.renderImage(objectSprite, fullSizeFrame, convertedCoordinates.x, convertedCoordinates.y, width, height);
+			this.drawImage(objectSprite, fullSizeFrame, convertedCoordinates.x, convertedCoordinates.y, width, height);
 		} else {
 			const animator = object.getAnimator();
-			this.renderImage(objectSprite, animator.getCurrentFrame(), object.getX(), object.getY(), width, height);
+			this.drawImage(objectSprite, animator.getCurrentFrame(), object.getX(), object.getY(), width, height);
 		}
 
 		this.canvasContext.restore();
 	}
 
-	public renderImage(spriteImage: HTMLImageElement, spriteFrame: Frame, x: number, y: number, width: number, height: number) {
+	/**
+	 * Draws an image on the screen
+	 * @param spriteImage The sprite
+	 * @param spriteFrame The area of the sprite that should be rendered
+	 * @param x The rendered image X position
+	 * @param y The rendered image Y position
+	 * @param width The rendered image width
+	 * @param height The rendered image height
+	 */
+	public drawImage(spriteImage: HTMLImageElement, spriteFrame: Frame, x: number, y: number, width: number, height: number) {
 		this.canvasContext.save();
 
 		this.canvasContext.drawImage(
@@ -77,7 +94,15 @@ class Renderer {
 		this.canvasContext.restore();
 	}
 
-	public renderText(text: string, x: number, y: number, textFont: string, color: string = 'black') {
+	/**
+	 * Draws a line of text on the screen
+	 * @param text The text to render
+	 * @param x The X position
+	 * @param y The Y position
+	 * @param textFont The text's font
+	 * @param color The text's color
+	 */
+	public drawText(text: string, x: number, y: number, textFont: string, color: string = 'black') {
 		this.canvasContext.save();
 
 		this.canvasContext.fillStyle = color;
@@ -87,6 +112,15 @@ class Renderer {
 		this.canvasContext.restore();
 	}
 
+	/**
+	 * Draws a gameObject's hitbox
+	 * @param x The X position of the object
+	 * @param y The Y position of the object
+	 * @param width The width of the object
+	 * @param height The height of the object
+	 * @param worldOffset The world offset used to create the illusion of camera
+	 * @param forPlayer Whatever the object is the player of not
+	 */
 	public drawHitbox(x: number, y: number, width: number, height: number, worldOffset: Vector2f, forPlayer: boolean = false) {
 		const convertedCoodinates = !forPlayer ? this.convertCoodinates(x, y, worldOffset) : { x: x, y: y };
 
@@ -98,6 +132,15 @@ class Renderer {
 		this.canvasContext.restore();
 	}
 
+	/**
+	 * Draws a gameObject's shadow
+	 * @param x The X position of the object
+	 * @param y The Y position of the object
+	 * @param objectHeight The height of the object
+	 * @param shadowScale The shadow's scale
+	 * @param worldOffset The world offset used to create the illusion of camera
+	 * @param forPlayer Whatever the object is the player or not
+	 */
 	public drawShadow(x: number, y: number, objectHeight: number, shadowScale: number, worldOffset: Vector2f, forPlayer: boolean = false) {
 		const shadowSprite = GameObject.SHADOW_SPRITE;
 		const convertedCoodinates = !forPlayer ? this.convertCoodinates(x, y, worldOffset) : { x: x, y: y };

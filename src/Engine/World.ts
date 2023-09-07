@@ -49,6 +49,7 @@ class World {
 		const player = window.player;
 		const worldOffset: Vector2f = { x: player.getX(), y: player.getY() };
 
+		// Draw the shadow of all objects that have one
 		this.gameObjects
 			.filter((obj) => obj.hasShadow())
 			.forEach((object) => {
@@ -61,6 +62,7 @@ class World {
 				);
 			});
 
+		// Draw the player's shadow
 		window.renderer.drawShadow(
 			canvasWidth / 2,
 			canvasHeight / 2,
@@ -70,8 +72,9 @@ class World {
 			true
 		);
 
+		// Draws the game objects, exept for the player
 		objects.forEach((object) => {
-			window.renderer.renderGameObject(object, worldOffset);
+			window.renderer.drawGameObject(object, worldOffset);
 		});
 
 		this.renderPlayer();
@@ -79,6 +82,7 @@ class World {
 
 		if (window.debugInfoEnabled) this.renderDebugInfo(worldOffset);
 
+		// Keeps track of the current frame rate
 		if (Date.now() - this.lastFpsUpdateTime >= 1000) {
 			this.displayFramesPerSecond = this.framesPerSecond;
 			this.lastFpsUpdateTime = Date.now();
@@ -91,13 +95,18 @@ class World {
 
 	private renderItems(items: Array<GameObject>, worldOffset: Vector2f) {
 		items.forEach((object) => {
-			window.renderer.renderGameObject(object, worldOffset);
+			window.renderer.drawGameObject(object, worldOffset);
 		});
 	}
 
+	/**
+	 * Draws all the debug information on the screen, that is: The hitboxes, the indentifiers, and the debug info on the top-left
+	 * @param worldOffset The world offset used to create the illusion of camera
+	 */
 	private renderDebugInfo(worldOffset: Vector2f) {
 		const renderer = window.renderer;
 
+		// Draws all objects hitbox and identifiers, except for the player object
 		this.gameObjects.forEach((object) => {
 			const width = object.getWidth() * object.getScale();
 			const height = object.getHeight() * object.getScale();
@@ -105,14 +114,10 @@ class World {
 			const convertedCoodinates = window.renderer.convertCoodinates(object.getX(), object.getY(), worldOffset);
 
 			renderer.drawHitbox(object.getX(), object.getY(), width, height, worldOffset);
-			renderer.renderText(
-				object.getObjectIdentifier(),
-				convertedCoodinates.x - width / 2,
-				convertedCoodinates.y - height / 2 - 10,
-				'Arial 20px'
-			);
+			renderer.drawText(object.getObjectIdentifier(), convertedCoodinates.x - width / 2, convertedCoodinates.y - height / 2 - 10, 'Arial 20px');
 		});
 
+		// Draw the player hitbox and identifier
 		const canvas = window.renderer.getCanvas();
 		const canvasWidth = canvas.getWidth();
 		const canvasHeight = canvas.getHeight();
@@ -122,19 +127,24 @@ class World {
 		const height = player.getHeight() * player.getScale();
 
 		renderer.drawHitbox(canvasWidth / 2, canvasHeight / 2, width, height, { x: 0, y: 0 }, true);
-		renderer.renderText(
+		renderer.drawText(
 			player.getObjectIdentifier(),
 			canvasWidth / 2 - player.getWidth() / 2,
 			canvasHeight / 2 - player.getHeight() / 2 - 20,
 			'Arial 20'
 		);
 
-		renderer.renderText(`X: ${window.player.getX()}`, 20, 30, '20px Arial');
-		renderer.renderText(`Y: ${window.player.getY()}`, 20, 55, '20px Arial');
-		renderer.renderText(`FPS: ${this.displayFramesPerSecond}`, 20, 80, '20px Arial');
-		renderer.renderText(`TPS: ${this.ticksPerSecond}`, 20, 105, '20px Arial');
+		// Draw the debug information on the top-left
+		renderer.drawText(`X: ${window.player.getX()}`, 20, 30, '20px Arial');
+		renderer.drawText(`Y: ${window.player.getY()}`, 20, 55, '20px Arial');
+		renderer.drawText(`FPS: ${this.displayFramesPerSecond}`, 20, 80, '20px Arial');
+		renderer.drawText(`TPS: ${this.ticksPerSecond}`, 20, 105, '20px Arial');
 	}
 
+	/**
+	 * Draws the player at the center of the screen no matter it's position.
+	 * This is because of the camera illusion, we render the player at the center fo the screen all the time and move the world around at the opposite direction
+	 */
 	private renderPlayer() {
 		const player = window.player;
 		const sprite = player.getSprite();
@@ -145,7 +155,7 @@ class World {
 
 		const canvas = window.renderer.getCanvas();
 
-		window.renderer.renderImage(sprite, animator.getCurrentFrame(), canvas.getWidth() / 2, canvas.getHeight() / 2, width, height);
+		window.renderer.drawImage(sprite, animator.getCurrentFrame(), canvas.getWidth() / 2, canvas.getHeight() / 2, width, height);
 	}
 
 	/**
