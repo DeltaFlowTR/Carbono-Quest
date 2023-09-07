@@ -1,3 +1,4 @@
+import Maze from './Engine/Maze';
 import World from './Engine/World';
 import Player from './Player';
 import Renderer from './renderer/Renderer';
@@ -16,6 +17,9 @@ class Game {
 		window.debugInfoEnabled = false;
 
 		this.world = new World();
+
+		let maze = new Maze(20);
+		maze.generate();
 
 		window.addEventListener('keypress', (event) => {
 			if (event.key == 'p') window.debugInfoEnabled = !window.debugInfoEnabled;
