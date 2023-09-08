@@ -23,8 +23,8 @@ class Player extends GameObject implements ITickable {
 		const animator = new Animator('WalkDown');
 
 		super({
-			x: 100,
-			y: 100,
+			x: 0,
+			y: 0,
 			width: 34,
 			height: 52,
 			scale: 1.5,

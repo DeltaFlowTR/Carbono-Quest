@@ -1,66 +1,102 @@
 interface Cell {
-    visited: boolean,
-    backCellIndex: number,
-    index: number
+	visited: boolean;
+	backCellIndex: number;
+	index: number;
+	north: boolean;
+	south: boolean;
+	east: boolean;
+	west: boolean;
 }
 
 class Maze {
-    private cells: Array<Cell>;
-    
-    private mazeSize: number;
+	private cells: Array<Cell>;
 
-    constructor(mazeSize: number) {
-        this.cells = [];
+	private mazeSize: number;
 
-        this.mazeSize = mazeSize;
-    }
+	constructor(mazeSize: number) {
+		this.cells = [];
 
-    public generate(): void {
-        this.cells = [];
-        for(let i = 0; i < this.mazeSize * this.mazeSize; i++) {
-            this.cells[i] = { 
-                visited: false,
-                backCellIndex: -1, 
-                index: i
-            };
-        }
+		this.mazeSize = mazeSize;
+	}
 
-        let currentCell = this.cells[Math.floor(Math.random() * this.cells.length)];
-        currentCell.visited = true;
+	public generate(): void {
+		this.cells = [];
+		for (let i = 0; i < this.mazeSize * this.mazeSize; i++) {
+			this.cells[i] = {
+				visited: false,
+				backCellIndex: -1,
+				index: i,
+				north: false,
+				south: false,
+				east: false,
+				west: false,
+			};
+		}
 
-        while(true) {
-            let result = this.visitNextCell(currentCell);
-            currentCell = result.cell;
+		let currentCell = this.cells[Math.floor(Math.random() * this.cells.length)];
+		currentCell.visited = true;
 
-            if(currentCell.backCellIndex === -1) break;
-        }
+		while (true) {
+			let result = this.visitNextCell(currentCell);
+			currentCell = result.cell;
 
-        console.log(this.cells);
-    }
+			if (currentCell.backCellIndex === -1) break;
+		}
+	}
 
-    private visitNextCell(currentCell: Cell): { comingBack: boolean, cell: Cell} {
-        const neighbors = this.getNeighbors(currentCell).filter(cell => cell && !cell.visited);
-        
-        if(neighbors.length === 0) {
-            return { comingBack: true, cell: this.cells[currentCell.backCellIndex] };
-        }
+	private visitNextCell(currentCell: Cell): { comingBack: boolean; cell: Cell } {
+		const neighbors = this.getNeighbors(currentCell, this.mazeSize).filter((cell) => cell && !cell.visited);
 
-        const nextCell = neighbors[Math.floor(Math.random() * neighbors.length)];
-        
-        nextCell.visited = true;
-        nextCell.backCellIndex = currentCell.index;
-        
-        return { comingBack: false, cell: nextCell };
-    }
+		if (neighbors.length === 0) {
+			return { comingBack: true, cell: this.cells[currentCell.backCellIndex] };
+		}
 
-    private getNeighbors(cell: Cell): Array<Cell> {
-        const north = this.cells[cell.index - this.mazeSize];
-        const south = this.cells[cell.index + this.mazeSize];
-        const east = this.cells[cell.index + 1];
-        const west = this.cells[cell.index - 1];
+		const nextCell = neighbors[Math.floor(Math.random() * neighbors.length)];
 
-        return [north, south, east, west];
-    }
+		// Check what direction it chose
+		switch (currentCell.index - nextCell.index) {
+			case 1:
+				nextCell.east = true;
+				currentCell.west = true;
+				break;
+
+			case -1:
+				nextCell.west = true;
+				currentCell.east = true;
+				break;
+
+			case this.mazeSize:
+				nextCell.south = true;
+				currentCell.north = true;
+				break;
+
+			case -this.mazeSize:
+				nextCell.north = true;
+				currentCell.south = true;
+				break;
+		}
+
+		nextCell.visited = true;
+		nextCell.backCellIndex = currentCell.index;
+
+		return { comingBack: false, cell: nextCell };
+	}
+
+	private getNeighbors(cell: Cell, mazeSize: number): Array<Cell> {
+		const eastIndex = cell.index + 1;
+		const westIndex = cell.index - 1;
+
+		const north = this.cells[cell.index - this.mazeSize];
+		const south = this.cells[cell.index + this.mazeSize];
+		const east = Math.floor(eastIndex / mazeSize) === Math.floor(cell.index / mazeSize) ? this.cells[eastIndex] : undefined;
+		const west = Math.floor(westIndex / mazeSize) === Math.floor(cell.index / mazeSize) ? this.cells[westIndex] : undefined;
+
+		return [north, south, east, west];
+	}
+
+	public getCells(): Array<Cell> {
+		return this.cells;
+	}
 }
 
 export default Maze;

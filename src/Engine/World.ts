@@ -2,6 +2,8 @@ import { Vector2f } from '../Game';
 import Canvas from '../renderer/Canvas';
 import GameItem from './GameItem';
 import GameObject from './GameObject';
+import ITickable from './ITickable';
+import Road from './Objects/Road';
 
 class World {
 	private readonly tickInterval = (1 / 60) * 1000;
@@ -19,17 +21,6 @@ class World {
 		this.gameObjects = new Array<GameObject>();
 		this.startTickLoop();
 		this.render();
-
-		const lightBulb = new GameItem({
-			x: 200,
-			y: 200,
-			width: 50,
-			height: 50,
-			objectSprite: Canvas.createSprite('img/Light-bulb.png'),
-			objectIdentifier: 'LIGHT_BULB',
-		});
-
-		this.gameObjects.push(lightBulb);
 	}
 
 	/**
@@ -48,6 +39,12 @@ class World {
 
 		const player = window.player;
 		const worldOffset: Vector2f = { x: player.getX(), y: player.getY() };
+
+		objects
+			.filter((obj) => obj instanceof Road)
+			.forEach((object) => {
+				window.renderer.drawGameObject(object, worldOffset);
+			});
 
 		// Draw the shadow of all objects that have one
 		this.gameObjects
@@ -72,10 +69,12 @@ class World {
 			true
 		);
 
-		// Draws the game objects, exept for the player
-		objects.forEach((object) => {
-			window.renderer.drawGameObject(object, worldOffset);
-		});
+		// Draws the game objects, exept for the player and roads
+		objects
+			.filter((obj) => !(obj instanceof Road))
+			.forEach((object) => {
+				window.renderer.drawGameObject(object, worldOffset);
+			});
 
 		this.renderPlayer();
 		this.renderItems(items, worldOffset);
@@ -106,16 +105,23 @@ class World {
 	private renderDebugInfo(worldOffset: Vector2f) {
 		const renderer = window.renderer;
 
-		// Draws all objects hitbox and identifiers, except for the player object
-		this.gameObjects.forEach((object) => {
-			const width = object.getWidth() * object.getScale();
-			const height = object.getHeight() * object.getScale();
+		// Draws all objects hitbox and identifiers, except for the player object and roads (roads are not necessary)
+		this.gameObjects
+			.filter((obj) => !(obj instanceof Road))
+			.forEach((object) => {
+				const width = object.getWidth() * object.getScale();
+				const height = object.getHeight() * object.getScale();
 
-			const convertedCoodinates = window.renderer.convertCoodinates(object.getX(), object.getY(), worldOffset);
+				const convertedCoodinates = window.renderer.convertCoodinates(object.getX(), object.getY(), worldOffset);
 
-			renderer.drawHitbox(object.getX(), object.getY(), width, height, worldOffset);
-			renderer.drawText(object.getObjectIdentifier(), convertedCoodinates.x - width / 2, convertedCoodinates.y - height / 2 - 10, 'Arial 20px');
-		});
+				renderer.drawHitbox(object.getX(), object.getY(), width, height, worldOffset);
+				renderer.drawText(
+					object.getObjectIdentifier(),
+					convertedCoodinates.x - width / 2,
+					convertedCoodinates.y - height / 2 - 10,
+					'Arial 20px'
+				);
+			});
 
 		// Draw the player hitbox and identifier
 		const canvas = window.renderer.getCanvas();
@@ -184,6 +190,10 @@ class World {
 			tps++;
 			await wait(this.tickInterval);
 		}
+	}
+
+	public addGameObject(gameObject: GameObject) {
+		this.gameObjects.push(gameObject);
 	}
 
 	public getGameObjects() {
