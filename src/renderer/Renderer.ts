@@ -36,6 +36,11 @@ class Renderer {
 	 */
 	public clear(): void {
 		this.canvasContext.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+
+		this.canvasContext.save();
+		this.canvasContext.fillStyle = '#9c9c9c';
+		this.canvasContext.fillRect(0, 0, 1920, 1080);
+		this.canvasContext.restore();
 	}
 
 	/**

@@ -1,4 +1,5 @@
 import Maze from './Engine/Maze';
+import Building from './Engine/Objects/Building';
 import Road, { RoadDirection } from './Engine/Objects/Road';
 import World from './Engine/World';
 import Player from './Player';
@@ -24,11 +25,15 @@ class Game {
 		window.addEventListener('keypress', (event) => {
 			if (event.key == 'p') window.debugInfoEnabled = !window.debugInfoEnabled;
 		});
+
+		window.game = this;
 	}
 
 	private constructMaze(mazeSize: number): void {
 		const spriteSize = 64;
+		const buildingScaleIncrease = 2;
 		const roadScale = 5;
+		const buildingScale = roadScale + buildingScaleIncrease;
 		const spacingScale = 2;
 
 		const maze = new Maze(mazeSize);
@@ -62,10 +67,31 @@ class Game {
 
 			this.world.addGameObject(new Road(x, y, roadScale, spriteSize, roadDirection));
 
+			this.world.addGameObject(
+				new Building(x - roadScale * spriteSize, y - (buildingScale - buildingScaleIncrease / 2) * spriteSize, buildingScale)
+			);
+			this.world.addGameObject(
+				new Building(x + roadScale * spriteSize, y - (buildingScale - buildingScaleIncrease / 2) * spriteSize, buildingScale)
+			);
+
 			if (cell.north) this.world.addGameObject(new Road(x, y - roadScale * spriteSize, roadScale, spriteSize, 'VERTICAL'));
+			else this.world.addGameObject(new Building(x, y - (buildingScale - buildingScaleIncrease / 2) * spriteSize, buildingScale));
+
 			if (cell.south) this.world.addGameObject(new Road(x, y + roadScale * spriteSize, roadScale, spriteSize, 'VERTICAL'));
+			else this.world.addGameObject(new Building(x, y + (buildingScale - buildingScaleIncrease / 2) * spriteSize, buildingScale));
+
 			if (cell.west) this.world.addGameObject(new Road(x - roadScale * spriteSize, y, roadScale, spriteSize, 'HORIZONTAL'));
+			else this.world.addGameObject(new Building(x - roadScale * spriteSize, y, buildingScale));
+
 			if (cell.east) this.world.addGameObject(new Road(x + roadScale * spriteSize, y, roadScale, spriteSize, 'HORIZONTAL'));
+			else this.world.addGameObject(new Building(x + roadScale * spriteSize, y, buildingScale));
+
+			this.world.addGameObject(
+				new Building(x - roadScale * spriteSize, y + (buildingScale - buildingScaleIncrease / 2) * spriteSize, buildingScale)
+			);
+			this.world.addGameObject(
+				new Building(x + roadScale * spriteSize, y + (buildingScale - buildingScaleIncrease / 2) * spriteSize, buildingScale)
+			);
 		}
 	}
 
