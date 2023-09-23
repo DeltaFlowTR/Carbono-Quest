@@ -19,6 +19,8 @@ class Player extends GameObject implements ITickable {
 	private goingLeft: boolean;
 	private goingRight: boolean;
 
+	private usingController: boolean;
+
 	constructor() {
 		const animator = new Animator('WalkDown');
 
@@ -102,6 +104,14 @@ class Player extends GameObject implements ITickable {
 			secondPosition: { x: 34, y: 158 },
 		});
 
+		window.addEventListener("gamepadconnected", event => {
+			this.usingController = true;
+		});
+
+		window.addEventListener("gamepaddisconnected", () => {
+			this.usingController = false;
+		})
+
 		window.addEventListener('keydown', (event) => {
 			const key = event.key.toLowerCase();
 
@@ -145,10 +155,29 @@ class Player extends GameObject implements ITickable {
 		const previousX = this.x;
 		const previousY = this.y;
 
-		if (this.goingUp) this.y -= this.playerSpeed;
-		if (this.goingDown) this.y += this.playerSpeed;
-		if (this.goingLeft) this.x -= this.playerSpeed;
-		if (this.goingRight) this.x += this.playerSpeed;
+		if(this.usingController) {
+			const currentController = navigator.getGamepads()[0]
+			const XAxis = Math.floor(currentController.axes[0] * 10) / 10;
+			const YAxis = Math.floor(currentController.axes[1] * 10) / 10;
+
+			// const pressed = currentController.buttons.find(button => button.pressed);
+			// const index = currentController.buttons.indexOf(pressed);
+			// if(index != -1) console.log(index);
+
+			if(YAxis > 0.2 || YAxis < -0.2) this.y += this.playerSpeed * YAxis;
+			if(XAxis > 0.2 || XAxis < -0.2) this.x += this.playerSpeed * XAxis;
+
+			// LT Button
+			if(currentController.buttons[6].pressed) this.playerSpeed = this.sprintPlayerSpeed;
+			else this.playerSpeed = this.normalPlayerSpeed;
+		}
+		
+		if(!this.usingController) {
+			if (this.goingUp) this.y -= this.playerSpeed;
+			if (this.goingDown) this.y += this.playerSpeed;
+			if (this.goingLeft) this.x -= this.playerSpeed;
+			if (this.goingRight) this.x += this.playerSpeed;
+		}
 
 		if (this.y > previousY) {
 			// We return on the Y checks to make the vertical animations have priority over the horizontal ones
