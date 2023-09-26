@@ -2,6 +2,9 @@ import { Vector2f } from '../Game';
 import Canvas from '../renderer/Canvas';
 import GameItem from './GameItem';
 import GameObject from './GameObject';
+import ITickable from './ITickable';
+import Building from './Objects/Building';
+import Road from './Objects/Road';
 
 class World {
 	private readonly tickInterval = (1 / 60) * 1000;
@@ -19,17 +22,6 @@ class World {
 		this.gameObjects = new Array<GameObject>();
 		this.startTickLoop();
 		this.render();
-
-		const lightBulb = new GameItem({
-			x: 200,
-			y: 200,
-			width: 50,
-			height: 50,
-			objectSprite: Canvas.createSprite('img/Light-bulb.png'),
-			objectIdentifier: 'LIGHT_BULB',
-		});
-
-		this.gameObjects.push(lightBulb);
 	}
 
 	/**
@@ -49,10 +41,18 @@ class World {
 		const player = window.player;
 		const worldOffset: Vector2f = { x: player.getX(), y: player.getY() };
 
+		objects
+			.filter((obj) => obj instanceof Road)
+			.forEach((object) => {
+				if (!this.isInsideScreen(object)) return;
+				window.renderer.drawGameObject(object, worldOffset);
+			});
+
 		// Draw the shadow of all objects that have one
 		this.gameObjects
 			.filter((obj) => obj.hasShadow())
 			.forEach((object) => {
+				if (!this.isInsideScreen(object)) return;
 				window.renderer.drawShadow(
 					object.getX(),
 					object.getY(),
@@ -72,10 +72,13 @@ class World {
 			true
 		);
 
-		// Draws the game objects, exept for the player
-		objects.forEach((object) => {
-			window.renderer.drawGameObject(object, worldOffset);
-		});
+		// Draws the game objects, exept for the player and roads
+		objects
+			.filter((obj) => !(obj instanceof Road))
+			.forEach((object) => {
+				if (!this.isInsideScreen(object)) return;
+				window.renderer.drawGameObject(object, worldOffset);
+			});
 
 		this.renderPlayer();
 		this.renderItems(items, worldOffset);
@@ -106,16 +109,25 @@ class World {
 	private renderDebugInfo(worldOffset: Vector2f) {
 		const renderer = window.renderer;
 
-		// Draws all objects hitbox and identifiers, except for the player object
-		this.gameObjects.forEach((object) => {
-			const width = object.getWidth() * object.getScale();
-			const height = object.getHeight() * object.getScale();
+		// Draws all objects hitbox and identifiers, except for the player object and roads (roads are not necessary)
+		this.gameObjects
+			.filter((obj) => !(obj instanceof Road) && !(obj instanceof Building))
+			.forEach((object) => {
+				if (!this.isInsideScreen(object)) return;
 
-			const convertedCoodinates = window.renderer.convertCoodinates(object.getX(), object.getY(), worldOffset);
+				const width = object.getWidth() * object.getScale();
+				const height = object.getHeight() * object.getScale();
 
-			renderer.drawHitbox(object.getX(), object.getY(), width, height, worldOffset);
-			renderer.drawText(object.getObjectIdentifier(), convertedCoodinates.x - width / 2, convertedCoodinates.y - height / 2 - 10, 'Arial 20px');
-		});
+				const convertedCoodinates = window.renderer.convertCoodinates(object.getX(), object.getY(), worldOffset);
+
+				renderer.drawHitbox(object.getX(), object.getY(), width, height, worldOffset);
+				renderer.drawText(
+					object.getObjectIdentifier(),
+					convertedCoodinates.x - width / 2,
+					convertedCoodinates.y - height / 2 - 10,
+					'Arial 20px'
+				);
+			});
 
 		// Draw the player hitbox and identifier
 		const canvas = window.renderer.getCanvas();
@@ -184,6 +196,54 @@ class World {
 			tps++;
 			await wait(this.tickInterval);
 		}
+	}
+
+	/**
+	 * Checks if the object is within theplayer screen. Used to render only objects that are visible
+	 * @param object The object to check
+	 * @returns True if within the player screen, false otherwise
+	 */
+	private isInsideScreen(object: GameObject) {
+		const scale = object.getScale();
+		const x = object.getX();
+		const y = object.getY();
+		const width = object.getWidth() * scale;
+		const height = object.getHeight() * scale;
+
+		const playerX = window.player.getX();
+		const playerY = window.player.getY();
+
+		const screenTopLeft = [playerX - 1920 / 2, playerY - 1080 / 2];
+		const screenBottomRight = [playerX + 1920 / 2, playerY + 1080 / 2];
+
+		const topLeft = [x - width / 2, y - height / 2];
+		const topRight = [x + width / 2, y - height / 2];
+		const bottomLeft = [x - width / 2, y + height / 2];
+		const bottomRight = [x + width / 2, y + height / 2];
+
+		const topLeftInside =
+			topLeft[0] > screenTopLeft[0] && topLeft[0] < screenBottomRight[0] && topLeft[1] > screenTopLeft[1] && topLeft[1] < screenBottomRight[1];
+		const topRightInside =
+			topRight[0] > screenTopLeft[0] &&
+			topRight[0] < screenBottomRight[0] &&
+			topRight[1] > screenTopLeft[1] &&
+			topRight[1] < screenBottomRight[1];
+		const bottomLeftInside =
+			bottomLeft[0] > screenTopLeft[0] &&
+			bottomLeft[0] < screenBottomRight[0] &&
+			bottomLeft[1] > screenTopLeft[1] &&
+			bottomLeft[1] < screenBottomRight[1];
+		const bottomRightInside =
+			bottomRight[0] > screenTopLeft[0] &&
+			bottomRight[0] < screenBottomRight[0] &&
+			bottomRight[1] > screenTopLeft[1] &&
+			bottomRight[1] < screenBottomRight[1];
+
+		return topLeftInside || topRightInside || bottomLeftInside || bottomRightInside;
+	}
+
+	public addGameObject(gameObject: GameObject) {
+		this.gameObjects.push(gameObject);
 	}
 
 	public getGameObjects() {
