@@ -29,9 +29,13 @@ class Game {
 		window.game = this;
 	}
 
+	/**
+	 * Constructs the city maze based on a given size
+	 * @param mazeSize The size of the city
+	 */
 	private constructMaze(mazeSize: number): void {
 		const spriteSize = 64;
-		const buildingScaleIncrease = 2;
+		const buildingScaleIncrease = 3;
 		const roadScale = 5;
 		const buildingScale = roadScale + buildingScaleIncrease;
 		const spacingScale = 2;

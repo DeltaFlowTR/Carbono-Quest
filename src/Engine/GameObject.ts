@@ -20,7 +20,7 @@ interface GameObjectProperties {
 abstract class GameObject {
 	public static readonly SHADOW_SPRITE = Canvas.createSprite('img/Shadow.png');
 
-	protected objectSprite: HTMLImageElement;
+	protected readonly objectSprite: HTMLImageElement;
 
 	protected x: number;
 	protected y: number;

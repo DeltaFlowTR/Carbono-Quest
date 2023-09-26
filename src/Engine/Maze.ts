@@ -19,6 +19,9 @@ class Maze {
 		this.mazeSize = mazeSize;
 	}
 
+	/**
+	 * Generates a random maze whith the given size
+	 */
 	public generate(): void {
 		this.cells = [];
 		for (let i = 0; i < this.mazeSize * this.mazeSize; i++) {
@@ -44,6 +47,11 @@ class Maze {
 		}
 	}
 
+	/**
+	 * Visits the next cell of the maze in order to create a path
+	 * @param currentCell The cell visited previously
+	 * @returns An object containing the visited cell and a boolean indicating whether we are coming back to a previously visited cell or visiting a new one
+	 */
 	private visitNextCell(currentCell: Cell): { comingBack: boolean; cell: Cell } {
 		const neighbors = this.getNeighbors(currentCell, this.mazeSize).filter((cell) => cell && !cell.visited);
 
@@ -82,6 +90,12 @@ class Maze {
 		return { comingBack: false, cell: nextCell };
 	}
 
+	/**
+	 * Returns te surrounding cells of the current one
+	 * @param cell The current cell
+	 * @param mazeSize The size of the maze
+	 * @returns An array containing all the surrounding cells
+	 */
 	private getNeighbors(cell: Cell, mazeSize: number): Array<Cell> {
 		const eastIndex = cell.index + 1;
 		const westIndex = cell.index - 1;

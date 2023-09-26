@@ -48,8 +48,6 @@ class Building extends GameObject {
 		secondPosition: { x: 194, y: 194 },
 	};
 
-	private readonly buildingIndex: number;
-
 	constructor(x: number, y: number, scale: number) {
 		super({
 			x: x,
