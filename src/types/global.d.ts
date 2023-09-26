@@ -1,3 +1,4 @@
+import Game from "../Game";
 import Player from "../Player";
 import Renderer from "../renderer/Renderer";
 
@@ -6,5 +7,6 @@ declare global {
         player: Player;
         debugInfoEnabled: boolean;
         renderer: Renderer;
+        game: Game;
     }
 }
