@@ -1,3 +1,4 @@
+import GameItem from './Engine/GameItem';
 import Maze from './Engine/Maze';
 import Building from './Engine/Objects/Building';
 import Road, { RoadDirection } from './Engine/Objects/Road';
@@ -97,6 +98,20 @@ class Game {
 				new Building(x + roadScale * spriteSize, y + (buildingScale - buildingScaleIncrease / 2) * spriteSize, buildingScale)
 			);
 		}
+
+		const roads = this.getWorld().getGameObjects().filter(obj => obj instanceof Road);
+		const usedRoads: Road[] = [];
+
+		const addItem = (index: number) => {
+			const randomRoad = roads[Math.floor(Math.random() * roads.length)];
+
+			if (!usedRoads.includes(randomRoad)) {
+				this.world.addGameObject(new GameItem(randomRoad.getX(), randomRoad.getY(), 1.5, index));
+				usedRoads.push(randomRoad);
+			} else addItem(index);
+		}
+
+		for (let i = 0; i < 20; i++) addItem(i);
 	}
 
 	public getWorld() {
