@@ -18,6 +18,8 @@ class Renderer {
 	constructor() {
 		this.canvas = new Canvas('canvas');
 		this.canvasContext = this.canvas.getContext();
+
+		this.canvasContext.imageSmoothingEnabled = false;
 	}
 
 	public convertCoodinates(x: number, y: number, worldOffset: Vector2f) {
@@ -34,6 +36,11 @@ class Renderer {
 	 */
 	public clear(): void {
 		this.canvasContext.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+
+		this.canvasContext.save();
+		this.canvasContext.fillStyle = '#9c9c9c';
+		this.canvasContext.fillRect(0, 0, 1920, 1080);
+		this.canvasContext.restore();
 	}
 
 	/**
@@ -52,13 +59,9 @@ class Renderer {
 		const convertedCoordinates = this.convertCoodinates(object.getX(), object.getY(), worldOffset);
 
 		if (!object.isAnimated()) {
-			const spriteSize = Canvas.getSpriteSize(objectSprite);
-			const fullSizeFrame: Frame = {
-				firstPosition: { x: 0, y: 0 },
-				secondPosition: { x: spriteSize.width, y: spriteSize.height },
-			};
+			const frame = object.getSpriteFrame() || object.getFullSizeFrame();
 
-			this.drawImage(objectSprite, fullSizeFrame, convertedCoordinates.x, convertedCoordinates.y, width, height);
+			this.drawImage(objectSprite, frame, convertedCoordinates.x, convertedCoordinates.y, width, height);
 		} else {
 			const animator = object.getAnimator();
 			this.drawImage(objectSprite, animator.getCurrentFrame(), object.getX(), object.getY(), width, height);
@@ -76,7 +79,7 @@ class Renderer {
 	 * @param width The rendered image width
 	 * @param height The rendered image height
 	 */
-	public drawImage(spriteImage: HTMLImageElement, spriteFrame: Frame, x: number, y: number, width: number, height: number) {
+	public drawImage(spriteImage: HTMLImageElement, spriteFrame: Frame, x: number, y: number, width: number, height: number): void {
 		this.canvasContext.save();
 
 		this.canvasContext.drawImage(
