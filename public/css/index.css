@@ -157,3 +157,8 @@ body {
 #end-backdrop.neutral {
 	background-color: #808080;
 }
+
+#end-image {
+	aspect-ratio: 1 / 1;
+	max-width: 400px;
+}
