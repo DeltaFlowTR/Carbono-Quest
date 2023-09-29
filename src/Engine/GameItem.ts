@@ -98,7 +98,55 @@ class GameItem extends GameObject {
 		secondPosition: { x: 640, y: 128 },
 	};
 
+	private static readonly ITEM_NAMES = [
+		"ITEM_1",
+		"ITEM_2",
+		"ITEM_3",
+		"ITEM_4",
+		"ITEM_5",
+		"ITEM_6",
+		"ITEM_7",
+		"ITEM_8",
+		"ITEM_9",
+		"ITEM_10",
+		"ITEM_11",
+		"ITEM_12",
+		"ITEM_13",
+		"ITEM_14",
+		"ITEM_15",
+		"ITEM_16",
+		"ITEM_17",
+		"ITEM_18",
+		"ITEM_19",
+		"ITEM_20"
+	]
+
+	private static readonly ITEM_DESCRIPTIONS = [
+		"DESCRIPTION_1",
+		"DESCRIPTION_2",
+		"DESCRIPTION_3",
+		"DESCRIPTION_4",
+		"DESCRIPTION_5",
+		"DESCRIPTION_6",
+		"DESCRIPTION_7",
+		"DESCRIPTION_8",
+		"DESCRIPTION_9",
+		"DESCRIPTION_10",
+		"DESCRIPTION_11",
+		"DESCRIPTION_12",
+		"DESCRIPTION_13",
+		"DESCRIPTION_14",
+		"DESCRIPTION_15",
+		"DESCRIPTION_16",
+		"DESCRIPTION_17",
+		"DESCRIPTION_18",
+		"DESCRIPTION_19",
+		"DESCRIPTION_20",
+	]
+
 	private readonly good: boolean;
+	private readonly name: string;
+	private readonly description: string;
 
 	constructor(x: number, y: number, scale: number, spriteIndex: number, good: boolean) {
 		const availableSprites: Frame[] = [
@@ -136,11 +184,22 @@ class GameItem extends GameObject {
 		this.renderShadow = true;
 		this.shadowScale = 0.5;
 		this.spriteFrame = availableSprites[spriteIndex];
+
 		this.good = good;
+		this.name = GameItem.ITEM_NAMES[spriteIndex];
+		this.description = GameItem.ITEM_DESCRIPTIONS[spriteIndex];
 	}
 
 	public isGood(): boolean {
 		return this.good;
+	}
+
+	public getName() {
+		return this.name;
+	}
+
+	public getDescription() {
+		return this.description;
 	}
 }
 

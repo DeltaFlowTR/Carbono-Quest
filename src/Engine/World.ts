@@ -12,6 +12,10 @@ class World {
 	private readonly goodItemsCounter = document.getElementById('good-item-counter') as HTMLHeadingElement;
 	private readonly badItemsCounter = document.getElementById('bad-item-counter') as HTMLHeadingElement;
 
+	private readonly itemName = document.getElementById('item-name') as HTMLHeadingElement;
+	private readonly itemDescription = document.getElementById('item-description') as HTMLParagraphElement;
+	private readonly itemPopup = document.getElementById('item-popup') as HTMLDivElement
+
 	private ticksPerSecond: number = 0;
 
 	private framesPerSecond: number = 0;
@@ -209,6 +213,12 @@ class World {
 
 				this.goodItemsCounter.innerText = this.goodItensPicked.toString();
 				this.badItemsCounter.innerText = this.badItensPicked.toString();
+
+				this.itemName.innerText = collidingItem.getName();
+				this.itemDescription.innerText = collidingItem.getDescription();
+
+				this.itemPopup.classList.add("shown");
+				setTimeout(() => this.itemPopup.classList.remove("shown"), 10000);
 			}
 
 			if (Date.now() - lastTPSUpdateMillis > 1000) {
