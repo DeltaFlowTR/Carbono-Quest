@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
 html,
 body {
 	padding: 0;
@@ -8,10 +10,155 @@ body {
 	align-items: center;
 	justify-content: center;
 	background-color: black;
+	overflow: hidden;
 }
 
 #canvas {
 	height: 100%;
 	background-color: white;
 	/* image-rendering: pixelated; */
+}
+
+.timer {
+	max-width: 500px;
+	width: 100%;
+	height: 125px;
+	background-color: rgba(0, 0, 0, 0.25);
+	position: absolute;
+	z-index: 10;
+	top: 0;
+	left: 50%;
+	transform: translate(-50%, 0);
+	display: grid;
+	color: white;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;
+	font-family: Poppins, serif;
+}
+
+.timer img {
+	width: 50px;
+	aspect-ratio: 1 / 1;
+}
+
+.timer h1 {
+	margin: 0;
+	margin-bottom: 5px;
+	width: 100%;
+}
+
+.timer .good-items-display,
+.timer .bad-items-display {
+	grid-row: 2;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+}
+
+.timer .good-items-display {
+	grid-column: 1;
+	text-align: left;
+}
+
+.timer .good-items-display h1 {
+	margin-left: 15px;
+}
+
+.timer .bad-items-display {
+	grid-column: 2;
+	text-align: right;
+}
+
+.timer .bad-items-display h1 {
+	margin-right: 15px;
+}
+
+.timer .good-items-display h1,
+.timer .bad-items-display h1 {
+	max-width: 50px;
+	margin-bottom: 0;
+}
+
+#item-popup {
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0);
+	bottom: -100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	font-family: Poppins, serif;
+	background-color: rgba(0, 0, 0, 0.25);
+	border-radius: 20px;
+	width: 100%;
+	max-width: 800px;
+	color: white;
+	transition: .1s;
+}
+
+#item-popup.shown {
+	bottom: 10px;
+}
+
+#item-popup .header {
+	margin: 0;
+	display: flex;
+	flex-direction: row;
+}
+
+#item-popup .header h1 {
+	margin: 10px;
+}
+
+#item-popup p {
+	font-size: 1.4rem;
+	margin: 0;
+	margin-bottom: 10px;
+	padding: 0 5px;
+	text-align: center;
+}
+
+#end-backdrop {
+	position: absolute;
+	aspect-ratio: 1 / 1;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	opacity: 1;
+	width: 0;
+	transition: 1s;
+}
+
+#end-image {
+	max-width: 800px;
+	width: 100%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#end-backdrop.expanded {
+	width: 120vw;
+}
+
+#end-backdrop.bad {
+	background-color: #d13b41;
+}
+
+#end-backdrop.good {
+	background-color: #021283;
+}
+
+#end-backdrop.neutral {
+	background-color: #808080;
+}
+
+#end-image {
+	aspect-ratio: 1 / 1;
+	max-width: 400px;
 }

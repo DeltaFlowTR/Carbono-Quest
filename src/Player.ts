@@ -1,5 +1,6 @@
 import GameObject from './Engine/GameObject';
 import ITickable from './Engine/ITickable';
+import Road from './Engine/Objects/Road';
 import Animator from './renderer/animation/Animator';
 import GameAnimation from './renderer/animation/GameAnimation';
 import Canvas from './renderer/Canvas';
@@ -9,8 +10,8 @@ import Canvas from './renderer/Canvas';
  * all the movimentation and interactions between the player and the game
  */
 class Player extends GameObject implements ITickable {
-	private readonly normalPlayerSpeed = 2.5;
-	private readonly sprintPlayerSpeed = 4;
+	private readonly normalPlayerSpeed = 10;
+	private readonly sprintPlayerSpeed = 20;
 
 	private playerSpeed: number;
 
@@ -25,8 +26,8 @@ class Player extends GameObject implements ITickable {
 		const animator = new Animator('WalkDown');
 
 		super({
-			x: 100,
-			y: 100,
+			x: 0,
+			y: 0,
 			width: 34,
 			height: 52,
 			scale: 1.5,
@@ -194,12 +195,55 @@ class Player extends GameObject implements ITickable {
 		if (this.x === previousX && this.y === previousY) this.animator.stopAnimation();
 	}
 
-	public getX(): number {
-		return this.x;
-	}
+	/**
+	 * Checks if the player's hitbox is inside a road
+	 * @returns An object containing the corners that are inside the road
+	 */
+	public checkInsideRoad(x: number, y: number) {
+		const scale = this.scale;
+		const width = this.width * scale;
+		const height = this.height * scale;
 
-	public getY(): number {
-		return this.y;
+		const topLeft: [number, number] = [x - width / 2, y - height / 2];
+		const topRight: [number, number] = [x + width / 2, y - height / 2];
+		const bottomLeft: [number, number] = [x - width / 2, y + height / 2];
+		const bottomRight: [number, number] = [x + width / 2, y + height / 2];
+
+		let isTopLeftInside = false;
+		let isTopRightInside = false;
+		let isBottomLeftInside = false;
+		let isBottomRightInside = false;
+
+		const isPointInside = (point: [number, number], roadTopLeft: [number, number], roadBottomRight: [number, number]) => {
+			return point[0] > roadTopLeft[0] && point[1] > roadTopLeft[1] && point[0] < roadBottomRight[0] && point[1] < roadBottomRight[1];
+		};
+
+		window.game
+			?.getWorld()
+			.getGameObjects()
+			.filter((obj) => obj instanceof Road)
+			.forEach((object) => {
+				const objectScale = object.getScale();
+				const objectX = object.getX();
+				const objectY = object.getY();
+				const objectWidth = object.getWidth() * objectScale;
+				const objectHeight = object.getHeight() * objectScale;
+
+				const roadTopLeft: [number, number] = [objectX - objectWidth / 2, objectY - objectHeight / 2];
+				const roadBottomRight: [number, number] = [objectX + objectWidth / 2, objectY + objectHeight / 2];
+
+				if (!isTopLeftInside) isTopLeftInside = isPointInside(topLeft, roadTopLeft, roadBottomRight);
+				if (!isTopRightInside) isTopRightInside = isPointInside(topRight, roadTopLeft, roadBottomRight);
+				if (!isBottomLeftInside) isBottomLeftInside = isPointInside(bottomLeft, roadTopLeft, roadBottomRight);
+				if (!isBottomRightInside) isBottomRightInside = isPointInside(bottomRight, roadTopLeft, roadBottomRight);
+			});
+
+		return {
+			topLeft: isTopLeftInside,
+			topRight: isTopRightInside,
+			bottomLeft: isBottomLeftInside,
+			bottomRight: isBottomRightInside,
+		};
 	}
 }
 

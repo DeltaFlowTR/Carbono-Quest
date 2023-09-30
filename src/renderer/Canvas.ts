@@ -4,7 +4,7 @@ class Canvas {
 
 	constructor(canvasId: string) {
 		this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
-		this.context = this.canvas.getContext('2d');
+		this.context = this.canvas.getContext('2d', { willReadFrequently: true });
 	}
 
 	public static createSprite(path: string) {

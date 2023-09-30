@@ -8,6 +8,29 @@
 		<link rel="stylesheet" href="/css/index.css" />
 	</head>
 	<body>
+		<div id="end-backdrop">
+			<img id="end-image" src="#" alt="" />
+		</div>
+
+		<div class="timer">
+			<h1 id="timer" style="text-align: center; grid-column: 1 / span 2">02:30</h1>
+			<div class="good-items-display">
+				<img src="img/TimerIcons/Good.png" alt="" />
+				<h1 id="good-item-counter">0</h1>
+			</div>
+			<div class="bad-items-display">
+				<h1 id="bad-item-counter">0</h1>
+				<img src="img/TimerIcons/Bad.png" alt="" />
+			</div>
+		</div>
+
+		<div id="item-popup">
+			<div class="header">
+				<h1 id="item-name">ITEM_NAME</h1>
+			</div>
+			<p id="item-description">Uma moto é rápida, mas queima combustível fóssil, contribuindo para a emissão de gases de efeito estufa. Use com moderação!</p>
+		</div>
+
 		<canvas id="canvas" width="1920" height="1080"></canvas>
 
 		<script type="module" src="/index.js"></script>
