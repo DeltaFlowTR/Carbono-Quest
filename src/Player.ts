@@ -105,7 +105,25 @@ class Player extends GameObject implements ITickable {
 			secondPosition: { x: 34, y: 158 },
 		});
 
-		window.addEventListener("gamepadconnected", event => {
+		if(!("ongamepadconnected" in window)) {
+			let interval: NodeJS.Timer | undefined = undefined;
+
+			const poll = () => {
+				const gamepads = navigator.getGamepads();
+				for(const gp of gamepads) {
+					if(gp) {
+						this.usingController = true;
+						clearInterval(interval);
+					}
+				}
+
+				interval = setInterval(poll, 500);
+			}
+
+			poll()
+		}
+
+		window.addEventListener("gamepadconnected", () => {
 			this.usingController = true;
 		});
 
@@ -156,32 +174,43 @@ class Player extends GameObject implements ITickable {
 		const previousX = this.x;
 		const previousY = this.y;
 
+		let newX = this.x;
+		let newY = this.y;
+
 		if(this.usingController) {
-			const currentController = navigator.getGamepads()[0]
-			const XAxis = Math.floor(currentController.axes[0] * 10) / 10;
-			const YAxis = Math.floor(currentController.axes[1] * 10) / 10;
+			const currentController = navigator.getGamepads().find(gp => gp != null);
+			const XAxis = Math.floor(currentController.axes[1] * 10) / 10;
+			const YAxis = Math.floor(currentController.axes[0] * 10) / 10;
 
 			// const pressed = currentController.buttons.find(button => button.pressed);
 			// const index = currentController.buttons.indexOf(pressed);
 			// if(index != -1) console.log(index);
 
-			if(YAxis > 0.2 || YAxis < -0.2) this.y += this.playerSpeed * YAxis;
-			if(XAxis > 0.2 || XAxis < -0.2) this.x += this.playerSpeed * XAxis;
+			if(YAxis > 0.2 || YAxis < -0.2) newX += this.playerSpeed * YAxis;
+			if(XAxis > 0.2 || XAxis < -0.2) newY += this.playerSpeed * XAxis;
 
 			// LT Button
 			if(currentController.buttons[6].pressed) this.playerSpeed = this.sprintPlayerSpeed;
 			else this.playerSpeed = this.normalPlayerSpeed;
-		}
-		
-		if(!this.usingController) {
-			if (this.goingUp) this.y -= this.playerSpeed;
-			if (this.goingDown) this.y += this.playerSpeed;
-			if (this.goingLeft) this.x -= this.playerSpeed;
-			if (this.goingRight) this.x += this.playerSpeed;
+		} else {
+			if (this.goingUp) newY -= this.playerSpeed;
+			if (this.goingDown) newY += this.playerSpeed;
+			if (this.goingLeft) newX -= this.playerSpeed;
+			if (this.goingRight) newX += this.playerSpeed;
 		}
 
+		const insideCorners = this.checkInsideRoad(newX, newY);
+
+		const canGoLeft = insideCorners.topLeft && insideCorners.bottomLeft;
+		const canGoRight = insideCorners.topRight && insideCorners.bottomRight;
+		const canGoUp = insideCorners.topLeft && insideCorners.topRight;
+		const canGoDown = insideCorners.bottomLeft && insideCorners.bottomRight;
+
+		if (canGoLeft && canGoRight) this.x = newX;
+		if (canGoUp && canGoDown) this.y = newY;
+
+		// We return on the Y checks to make the vertical animations have priority over the horizontal ones
 		if (this.y > previousY) {
-			// We return on the Y checks to make the vertical animations have priority over the horizontal ones
 			this.animator.startAnimation('WalkDown');
 			return;
 		} else if (this.y < previousY) {
