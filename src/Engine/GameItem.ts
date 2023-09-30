@@ -114,7 +114,7 @@ class GameItem extends GameObject {
 		"má alimentação",
 		"Queimada",
 		"Gerador a Gasolina",
-		"Não Reciclagem",
+		"Não a Reciclagem",
 		"Veículos Motorizados",
 		"Desmatamento",
 		"Lâmpada Incandescente",
