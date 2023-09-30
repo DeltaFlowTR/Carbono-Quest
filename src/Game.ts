@@ -1,3 +1,4 @@
+import GameItem from './Engine/GameItem';
 import Maze from './Engine/Maze';
 import Building from './Engine/Objects/Building';
 import Road, { RoadDirection } from './Engine/Objects/Road';
@@ -13,6 +14,13 @@ interface Vector2f {
 class Game {
 	private readonly world: World;
 
+	private readonly endBackdrop = document.getElementById('end-backdrop') as HTMLDivElement;
+	private readonly endImage = document.getElementById('end-image') as HTMLImageElement;
+
+	private goodEndingImage = 'img/Endings/Good.png';
+	private badEndingImage = 'img/Endings/Bad.png';
+	private neutralEndingImage = 'img/Endings/Neutral.png';
+
 	constructor() {
 		window.player = new Player();
 		window.renderer = new Renderer();
@@ -27,6 +35,19 @@ class Game {
 		});
 
 		window.game = this;
+	}
+
+	public endGame(goodItensPicked: number, badItensPicked: number) {
+		if (goodItensPicked > badItensPicked) {
+			this.endBackdrop.classList.add('good', 'expanded');
+			this.endImage.src = this.goodEndingImage;
+		} else if (goodItensPicked < badItensPicked) {
+			this.endBackdrop.classList.add('bad', 'expanded');
+			this.endImage.src = this.badEndingImage;
+		} else {
+			this.endBackdrop.classList.add('neutral', 'expanded');
+			this.endImage.src = this.neutralEndingImage;
+		}
 	}
 
 	/**
@@ -97,6 +118,22 @@ class Game {
 				new Building(x + roadScale * spriteSize, y + (buildingScale - buildingScaleIncrease / 2) * spriteSize, buildingScale)
 			);
 		}
+
+		const roads = this.getWorld()
+			.getGameObjects()
+			.filter((obj) => obj instanceof Road);
+		const usedRoads: Road[] = [];
+
+		const addItem = (index: number) => {
+			const randomRoad = roads[Math.floor(Math.random() * roads.length)];
+
+			if (!usedRoads.includes(randomRoad)) {
+				this.world.addGameObject(new GameItem(randomRoad.getX(), randomRoad.getY(), 1.5, index, index < 10));
+				usedRoads.push(randomRoad);
+			} else addItem(index);
+		};
+
+		for (let i = 0; i < World.totalItemCount; i++) addItem(i);
 	}
 
 	public getWorld() {

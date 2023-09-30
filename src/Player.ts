@@ -10,8 +10,8 @@ import Canvas from './renderer/Canvas';
  * all the movimentation and interactions between the player and the game
  */
 class Player extends GameObject implements ITickable {
-	private readonly normalPlayerSpeed = 2.5;
-	private readonly sprintPlayerSpeed = 4;
+	private readonly normalPlayerSpeed = 10;
+	private readonly sprintPlayerSpeed = 20;
 
 	private playerSpeed: number;
 

@@ -1,13 +1,20 @@
 import { Vector2f } from '../Game';
-import Canvas from '../renderer/Canvas';
 import GameItem from './GameItem';
 import GameObject from './GameObject';
-import ITickable from './ITickable';
 import Building from './Objects/Building';
 import Road from './Objects/Road';
 
 class World {
+	public static readonly totalItemCount: number = 20;
 	private readonly tickInterval = (1 / 60) * 1000;
+
+	private readonly timerDisplay = document.getElementById('timer') as HTMLHeadingElement;
+	private readonly goodItemsCounter = document.getElementById('good-item-counter') as HTMLHeadingElement;
+	private readonly badItemsCounter = document.getElementById('bad-item-counter') as HTMLHeadingElement;
+
+	private readonly itemName = document.getElementById('item-name') as HTMLHeadingElement;
+	private readonly itemDescription = document.getElementById('item-description') as HTMLParagraphElement;
+	private readonly itemPopup = document.getElementById('item-popup') as HTMLDivElement
 
 	private ticksPerSecond: number = 0;
 
@@ -17,6 +24,12 @@ class World {
 	private lastFpsUpdateTime: number = 0;
 
 	private gameObjects: Array<GameObject>;
+
+	private goodItensPicked: number = 0;
+	private badItensPicked: number = 0;
+
+	private timeRemaining: number = 2.5 * 60;
+	private running = true;
 
 	constructor() {
 		this.gameObjects = new Array<GameObject>();
@@ -180,22 +193,91 @@ class World {
 		let lastTPSUpdateMillis = Date.now();
 		let tps = 0;
 		while (true) {
-			// TIcks all objects inside the game
+			if (!this.running) return;
+
+			// Ticks all objects inside the game
 			this.gameObjects.forEach((object) => {
 				if (object.isTickable()) object.tick();
 			});
 
 			window.player.tick();
 
+			const collidingItem = this.gameObjects
+				.filter((obj) => obj instanceof GameItem)
+				.find((object) => this.checkObjectCollision(window.player, object)) as GameItem;
+			if (collidingItem) {
+				this.gameObjects.splice(this.gameObjects.indexOf(collidingItem), 1);
+
+				if (collidingItem.isGood()) this.goodItensPicked += 1;
+				else this.badItensPicked += 1;
+
+				this.goodItemsCounter.innerText = this.goodItensPicked.toString();
+				this.badItemsCounter.innerText = this.badItensPicked.toString();
+
+				this.itemName.innerText = collidingItem.getName();
+				this.itemDescription.innerText = collidingItem.getDescription();
+
+				this.itemPopup.classList.add("shown");
+				setTimeout(() => this.itemPopup.classList.remove("shown"), 10000);
+			}
+
 			if (Date.now() - lastTPSUpdateMillis > 1000) {
 				this.ticksPerSecond = tps;
 				lastTPSUpdateMillis = Date.now();
 				tps = 0;
+
+				this.timeRemaining -= 1;
+
+				const minutes = Math.floor(this.timeRemaining / 60);
+				const seconds = this.timeRemaining - minutes * 60;
+
+				this.timerDisplay.innerText = `0${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+				if (minutes == 0 && seconds == 0) {
+					this.running = false;
+					window.game.endGame(this.goodItensPicked, this.badItensPicked);
+				}
 			}
 
 			tps++;
 			await wait(this.tickInterval);
 		}
+	}
+
+	/**
+	 * Checks if the first object is inside the second one
+	 * @param objectOne The first object
+	 * @param objectTwo The second object
+	 * @returns True if the first object is inside the second, false otherwise
+	 */
+	public checkObjectCollision(objectOne: GameObject, objectTwo: GameObject) {
+		const oneX = objectOne.getX();
+		const oneY = objectOne.getY();
+		const oneScale = objectOne.getScale();
+		const oneWidth = objectOne.getWidth() * oneScale;
+		const oneHeight = objectOne.getHeight() * oneScale;
+
+		const oneTopLeft = [oneX - oneWidth / 2, oneY - oneHeight / 2];
+		const oneBottomRight = [oneX + oneWidth / 2, oneY + oneHeight / 2];
+
+		const twoX = objectTwo.getX();
+		const twoY = objectTwo.getY();
+		const twoScale = objectTwo.getScale();
+		const twoWidth = objectTwo.getWidth() * twoScale;
+		const twoHeight = objectTwo.getHeight() * twoScale;
+
+		const twoTopLeft = [twoX - twoWidth / 2, twoY - twoHeight / 2];
+		const twoBottomRight = [twoX + twoWidth / 2, twoY + twoHeight / 2];
+
+		const topLeftInside =
+			oneTopLeft[0] > twoTopLeft[0] && oneTopLeft[1] > twoTopLeft[1] && oneTopLeft[0] < twoBottomRight[0] && oneTopLeft[1] < twoBottomRight[1];
+		const bottomRightInside =
+			oneBottomRight[0] > twoTopLeft[0] &&
+			oneBottomRight[1] > twoTopLeft[1] &&
+			oneBottomRight[0] < twoBottomRight[0] &&
+			oneBottomRight[1] < twoBottomRight[1];
+
+		return topLeftInside || bottomRightInside;
 	}
 
 	/**
