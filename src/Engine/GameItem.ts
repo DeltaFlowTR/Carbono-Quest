@@ -103,13 +103,13 @@ class GameItem extends GameObject {
 		"Boa alimentação",
 		"Não as Queimada",
 		"Aerogerador",
-		"Veículos Não Motorizados (Bicicletas)",
+		"Veículos Não Motorizados",
 		"Sacola de Papel ",
 		"Mudinha",
 		"Lâmpada LED",
 		"Reciclagem",
 		"Painéis Solares",
-		"Sacola de Mercado",
+		"sacolas plásticas",
 		"Gasolina",
 		"má alimentação",
 		"Queimada",
@@ -118,15 +118,14 @@ class GameItem extends GameObject {
 		"Veículos Motorizados",
 		"Machado (representa o desmatamento)",
 		"Lâmpada Incandescente",
-		"Pilha, Bateria"
+		"Pilha,Bateria"
 	]
 
 	private static readonly ITEM_DESCRIPTIONS = [
 		"Uma alternativa mais ecológica feita a partir de fontes renováveis, como milho ou cana-de-açúcar. É uma escolha mais sustentável que ajuda a reduzir as emissões de gases de efeito estufa.",
 		"Alimentos frescos e saudáveis que requerem menos energia para serem produzidos, ajudando a reduzir as emissões de carbono.",
 		"Não as queimadas ajudam a preservar o equilíbrio ecológico e a reter carbono, reduzindo a pegada de carbono",
-		"Fonte de energia limpa e renovável, os aerogeradores geram eletricidade sem emissões de carbono, tornando-os altamente eficientes em termos de pegada de carbono",
-		"Bicicletas são alternativas ecológicas. Não emitem poluentes e ajudam a reduzir sua pegada de carbono. Pedale com orgulho",
+		"Veículos não motorizados, como bicicletas elétricas, e veículos elétricos ou veículos que usam fontes renováveis, como o etanol, são exemplos de opções sustentáveis que contribuem para a redução da pegada de carbono.",
 		"A sacola de papel é mais eficiente em termos de pegada de carbono, pois é reciclável e biodegradável.",
 		"Uma pequena muda de árvore que ajuda a combater o desmatamento, contribuindo para a captura de carbono.",
 		"Eficiente em termos de energia e de longa duração, economizando eletricidade e reduzindo a pegada de carbono.",
@@ -134,14 +133,14 @@ class GameItem extends GameObject {
 		"Fonte de energia limpa e renovável que reduz a dependência de combustíveis fósseis, diminuindo a pegada de carbono.",
 		"Feita de plástico, essa sacola polui o ambiente por muito tempo, tornando-a uma opção de pegada de carbono alta.",
 		"Combustível fóssil altamente poluente que contribui para uma pegada de carbono significativamente maior.",
-		"imentos processados que possuem uma pegada de carbono significativamente maior devido à produção de carne e processamento.",
+		"Alimentos processados que possuem uma pegada de carbono significativamente maior devido à produção de carne e processamento.",
 		"Representa a destruição de habitats naturais e a liberação de carbono, aumentando a pegada de carbono.",
 		"Poluente e ineficiente, o gerador a gasolina aumenta a pegada de carbono quando usado em vez de fontes de energia mais limpas.",
 		"Descartar produtos sem considerar a reciclagem contribui para a acumulação de lixo e o esgotamento de recursos, aumentando a pegada de carbono.",
-		"Veículos como motos são rápidos, mas queimam combustível fóssil, ampliando nossa pegada de carbono. Use com moderação e considere opções mais verdes!",
+		"Veículos como motos e carros que só usam gasolina  são rápidos, mas queimam combustível fóssil, ampliando nossa pegada de carbono. Use com moderação e considere opções mais verdes!",
 		"O machado representa a destruição das florestas, que libera grandes quantidades de carbono na atmosfera.",
 		"Desperdiça energia na forma de calor, tornando-a ineficiente e com uma pegada de carbono mais alta.",
-		"anto pilhas quanto baterias têm uma pegada de carbono menos eficiente devido à sua produção e descarte, em comparação com fontes de energia recarregáveis. Use com moderação e opte por alternativas mais sustentáveis.",
+		"Tanto pilhas quanto baterias têm uma pegada de carbono menos eficiente devido à sua produção e descarte, em comparação com fontes de energia recarregáveis. Use com moderação e opte por alternativas mais sustentáveis.",
 	]
 
 	private readonly good: boolean;
