@@ -31,9 +31,11 @@ class World {
 	private timeRemaining: number = 2.5 * 60;
 	private running = true;
 
+	private lastTPSUpdateMillis = Date.now();
+	private tps = 0;
+
 	constructor() {
 		this.gameObjects = new Array<GameObject>();
-		this.startTickLoop();
 		this.render();
 	}
 
@@ -43,6 +45,8 @@ class World {
 	 */
 	public async render() {
 		window.renderer.clear();
+
+		this.tick();
 
 		const canvas = window.renderer.getCanvas();
 		const canvasWidth = canvas.getWidth();
@@ -187,61 +191,57 @@ class World {
 	 * Method responsible for updating all the game objects.
 	 * This method should be called only one time, as it will start a loop that will continuously update the objects.
 	 */
-	private async startTickLoop() {
-		const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+	private async tick() {
+		// const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-		let lastTPSUpdateMillis = Date.now();
-		let tps = 0;
-		while (true) {
-			if (!this.running) return;
+		if (!this.running) return;
 
-			// Ticks all objects inside the game
-			this.gameObjects.forEach((object) => {
-				if (object.isTickable()) object.tick();
-			});
+		// Ticks all objects inside the game
+		this.gameObjects.forEach((object) => {
+			if (object.isTickable()) object.tick();
+		});
 
-			window.player.tick();
+		window.player.tick();
 
-			const collidingItem = this.gameObjects
-				.filter((obj) => obj instanceof GameItem)
-				.find((object) => this.checkObjectCollision(window.player, object)) as GameItem;
-			if (collidingItem) {
-				this.gameObjects.splice(this.gameObjects.indexOf(collidingItem), 1);
+		const collidingItem = this.gameObjects
+			.filter((obj) => obj instanceof GameItem)
+			.find((object) => this.checkObjectCollision(window.player, object)) as GameItem;
+		if (collidingItem) {
+			this.gameObjects.splice(this.gameObjects.indexOf(collidingItem), 1);
 
-				if (collidingItem.isGood()) this.goodItensPicked += 1;
-				else this.badItensPicked += 1;
+			if (collidingItem.isGood()) this.goodItensPicked += 1;
+			else this.badItensPicked += 1;
 
-				this.goodItemsCounter.innerText = this.goodItensPicked.toString();
-				this.badItemsCounter.innerText = this.badItensPicked.toString();
+			this.goodItemsCounter.innerText = this.goodItensPicked.toString();
+			this.badItemsCounter.innerText = this.badItensPicked.toString();
 
-				this.itemName.innerText = collidingItem.getName();
-				this.itemDescription.innerText = collidingItem.getDescription();
+			this.itemName.innerText = collidingItem.getName();
+			this.itemDescription.innerText = collidingItem.getDescription();
 
-				this.itemPopup.classList.add("shown");
-				setTimeout(() => this.itemPopup.classList.remove("shown"), 10000);
-			}
-
-			if (Date.now() - lastTPSUpdateMillis > 1000) {
-				this.ticksPerSecond = tps;
-				lastTPSUpdateMillis = Date.now();
-				tps = 0;
-
-				this.timeRemaining -= 1;
-
-				const minutes = Math.floor(this.timeRemaining / 60);
-				const seconds = this.timeRemaining - minutes * 60;
-
-				this.timerDisplay.innerText = `0${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-				if (minutes == 0 && seconds == 0) {
-					this.running = false;
-					window.game.endGame(this.goodItensPicked, this.badItensPicked);
-				}
-			}
-
-			tps++;
-			await wait(this.tickInterval);
+			this.itemPopup.classList.add("shown");
+			setTimeout(() => this.itemPopup.classList.remove("shown"), 10000);
 		}
+
+		if (Date.now() - this.lastTPSUpdateMillis > 1000) {
+			this.ticksPerSecond = this.tps;
+			this.lastTPSUpdateMillis = Date.now();
+			this.tps = 0;
+
+			this.timeRemaining -= 1;
+
+			const minutes = Math.floor(this.timeRemaining / 60);
+			const seconds = this.timeRemaining - minutes * 60;
+
+			this.timerDisplay.innerText = `0${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+			if (minutes == 0 && seconds == 0) {
+				this.running = false;
+				window.game.endGame(this.goodItensPicked, this.badItensPicked);
+			}
+		}
+
+		this.tps++;
+		// await wait(this.tickInterval);
 	}
 
 	/**
